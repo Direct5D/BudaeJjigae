@@ -27,10 +27,11 @@ int RunMessageLoop()
     return msg.wParam;
 }
 
-int WINAPI wWinMain(HINSTANCE _hInstance,
-                   HINSTANCE _hPrevInstance,
-                   PWSTR _pCmdLine,
-                   int _nShowCmd)
+int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
+                    _In_opt_ HINSTANCE _hPrevInstance,
+                    _In_ LPWSTR _lpCmdLine,
+                    _In_ int _nShowCmd
+)
 {
     if (false == InitWindow(_hInstance, _nShowCmd))
     {
@@ -80,9 +81,9 @@ LRESULT CALLBACK MainWndProc(
             // initialize the window. 
             return 0;
 
-        //case WM_PAINT:
-        //    // Paint the window's client area. 
-        //    return 0;
+            //case WM_PAINT:
+            //    // Paint the window's client area. 
+            //    return 0;
 
         case WM_SIZE:
             // Set the size and position of the window. 
