@@ -24,7 +24,7 @@ int RunMessageLoop()
 	}
 
 	// The exit code given in the PostQuitMessage function.
-	return msg.wParam;
+	return (int)msg.wParam;
 }
 
 int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
