@@ -6,113 +6,113 @@ LRESULT CALLBACK MainWndProc(HWND _hWnd, UINT _uMsg, WPARAM _wParam, LPARAM _lPa
 
 int RunMessageLoop()
 {
-    BOOL bRet;
-    MSG msg;
+	BOOL bRet;
+	MSG msg;
 
-    // If the GetMessage retrieves the WM_QUIT message, the return value is zero.
-    while (0 != (bRet = GetMessageW(&msg, NULL, 0, 0)))
-    {
-        if (bRet == -1)
-        {
-            // handle the error and possibly exit
-        }
-        else
-        {
-            TranslateMessage(&msg);
-            DispatchMessageW(&msg);
-        }
-    }
+	// If the GetMessage retrieves the WM_QUIT message, the return value is zero.
+	while (0 != (bRet = GetMessageW(&msg, NULL, 0, 0)))
+	{
+		if (bRet == -1)
+		{
+			// handle the error and possibly exit
+		}
+		else
+		{
+			TranslateMessage(&msg);
+			DispatchMessageW(&msg);
+		}
+	}
 
-    // The exit code given in the PostQuitMessage function.
-    return msg.wParam;
+	// The exit code given in the PostQuitMessage function.
+	return msg.wParam;
 }
 
 int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
-                    _In_opt_ HINSTANCE _hPrevInstance,
-                    _In_ LPWSTR _lpCmdLine,
-                    _In_ int _nShowCmd
+					_In_opt_ HINSTANCE _hPrevInstance,
+					_In_ LPWSTR _lpCmdLine,
+					_In_ int _nShowCmd
 )
 {
-    if (false == InitWindow(_hInstance, _nShowCmd))
-    {
-        return 0;
-    }
+	if (false == InitWindow(_hInstance, _nShowCmd))
+	{
+		return 0;
+	}
 
-    return RunMessageLoop();
+	return RunMessageLoop();
 }
 
 bool InitWindow(HINSTANCE _hInstance, int _nShowCmd)
 {
-    // Register the window class.
-    const wchar_t CLASS_NAME[] = L"Sample Window Class";
+	// Register the window class.
+	const wchar_t CLASS_NAME[] = L"Sample Window Class";
 
-    WNDCLASS wc = { };
-    wc.lpfnWndProc = MainWndProc;
-    wc.hInstance = _hInstance;
-    wc.lpszClassName = CLASS_NAME;
+	WNDCLASS wc = { };
+	wc.lpfnWndProc = MainWndProc;
+	wc.hInstance = _hInstance;
+	wc.lpszClassName = CLASS_NAME;
 
-    if (0 == RegisterClassW(&wc))
-    {
-        return false;
-    }
+	if (0 == RegisterClassW(&wc))
+	{
+		return false;
+	}
 
-    HWND hMainWindow = CreateWindowW(L"Sample Window Class", L"Sample Window", WS_OVERLAPPEDWINDOW,
-                                     CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                                     NULL, NULL, _hInstance, NULL);
-    if (NULL == hMainWindow)
-    {
-        return false;
-    }
+	HWND hMainWindow = CreateWindowW(L"Sample Window Class", L"Sample Window", WS_OVERLAPPEDWINDOW,
+									 CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+									 NULL, NULL, _hInstance, NULL);
+	if (NULL == hMainWindow)
+	{
+		return false;
+	}
 
-    ShowWindow(hMainWindow, _nShowCmd);
-    UpdateWindow(hMainWindow);
-    return true;
+	ShowWindow(hMainWindow, _nShowCmd);
+	UpdateWindow(hMainWindow);
+	return true;
 }
 
 LRESULT CALLBACK MainWndProc(
-    HWND _hWnd,
-    UINT _uMsg,
-    WPARAM _wParam,
-    LPARAM _lParam)
+	HWND _hWnd,
+	UINT _uMsg,
+	WPARAM _wParam,
+	LPARAM _lParam)
 {
-    switch (_uMsg)
-    {
-        case WM_CREATE:
-            // initialize the window. 
-            return 0;
+	switch (_uMsg)
+	{
+		case WM_CREATE:
+			// initialize the window. 
+			return 0;
 
-            //case WM_PAINT:
-            //    // Paint the window's client area. 
-            //    return 0;
+			//case WM_PAINT:
+			//    // Paint the window's client area. 
+			//    return 0;
 
-        case WM_SIZE:
-            // Set the size and position of the window. 
-            return 0;
+		case WM_SIZE:
+			// Set the size and position of the window. 
+			return 0;
 
-        case WM_CLOSE:
-        {
-            const int result = MessageBoxW(_hWnd, L"Are you sure you want to quit the program?", L"Warning", MB_YESNO);
+		case WM_CLOSE:
+		{
+			const int result = MessageBoxW(_hWnd, L"Are you sure you want to quit the program?", L"Warning", MB_YESNO);
 
-            switch (result)
-            {
-                case IDYES:
-                    PostQuitMessage(0);
-                    break;
-                case IDNO:
-                default:
-                    // Do something
-                    break;
-            }
+			switch (result)
+			{
+				case IDYES:
+					PostQuitMessage(0);
+					break;
+				case IDNO:
+				default:
+					// Do something
+					break;
+			}
 
-            return 0;
-        }
+			return 0;
+		}
 
-        //case WM_DESTROY:
-        //    PostQuitMessage(0);
-        //    return 0;
+		//case WM_DESTROY:
+		//    PostQuitMessage(0);
+		//    return 0;
 
-        default:
-            return DefWindowProc(_hWnd, _uMsg, _wParam, _lParam);
-    }
-    return 0;
+		default:
+			return DefWindowProc(_hWnd, _uMsg, _wParam, _lParam);
+	}
+	return 0;
 }
