@@ -1,13 +1,11 @@
-# Visual Studio가 C++ 설정을 사용하여 .editorconfig 파일을 생성했습니다.
-root = true
 
 [*.{c++,cc,cpp,cppm,cxx,h,h++,hh,hpp,hxx,inl,ipp,ixx,tlh,tli}]
 
-# Visual C++ 코드 스타일 설정
+# Visual C++ Code Style settings
 
 cpp_generate_documentation_comments = xml
 
-# Visual C++ 서식 설정
+# Visual C++ Formatting settings
 
 cpp_indent_braces = false
 cpp_indent_multi_line_relative_to = innermost_parenthesis
@@ -21,7 +19,7 @@ cpp_indent_goto_labels = one_left
 cpp_indent_preprocessor = leftmost_column
 cpp_indent_access_specifiers = false
 cpp_indent_namespace_contents = true
-cpp_indent_preserve_comments = false
+cpp_indent_preserve_comments = true
 cpp_new_line_before_open_brace_namespace = new_line
 cpp_new_line_before_open_brace_type = new_line
 cpp_new_line_before_open_brace_function = new_line
