@@ -2,30 +2,8 @@
 
 
 bool InitWindow(HINSTANCE _hInstance, int _nShowCmd);
+int RunMessageLoop();
 LRESULT CALLBACK MainWndProc(HWND _hWnd, UINT _uMsg, WPARAM _wParam, LPARAM _lParam);
-
-int RunMessageLoop()
-{
-	BOOL bRet;
-	MSG msg;
-
-	// If the GetMessage retrieves the WM_QUIT message, the return value is zero.
-	while (0 != (bRet = GetMessageW(&msg, NULL, 0, 0)))
-	{
-		if (bRet == -1)
-		{
-			// handle the error and possibly exit
-		}
-		else
-		{
-			TranslateMessage(&msg);
-			DispatchMessageW(&msg);
-		}
-	}
-
-	// The exit code given in the PostQuitMessage function.
-	return (int)msg.wParam;
-}
 
 int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
 					_In_opt_ HINSTANCE _hPrevInstance,
@@ -67,6 +45,29 @@ bool InitWindow(HINSTANCE _hInstance, int _nShowCmd)
 	ShowWindow(hMainWindow, _nShowCmd);
 	UpdateWindow(hMainWindow);
 	return true;
+}
+
+int RunMessageLoop()
+{
+	BOOL bRet;
+	MSG msg;
+
+	// If the GetMessage retrieves the WM_QUIT message, the return value is zero.
+	while (0 != (bRet = GetMessageW(&msg, NULL, 0, 0)))
+	{
+		if (bRet == -1)
+		{
+			// handle the error and possibly exit
+		}
+		else
+		{
+			TranslateMessage(&msg);
+			DispatchMessageW(&msg);
+		}
+	}
+
+	// The exit code given in the PostQuitMessage function.
+	return (int)msg.wParam;
 }
 
 LRESULT CALLBACK MainWndProc(
