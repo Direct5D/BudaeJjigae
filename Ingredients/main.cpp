@@ -3,7 +3,7 @@
 
 int RunMessageLoop();
 LRESULT CALLBACK MainWndProc(HWND _hWnd, UINT _uMsg, WPARAM _wParam, LPARAM _lParam);
-void MainWndOnResize(HWND _hWnd, UINT _width, UINT _height);
+void MainWndOnResize(HWND _hWnd, UINT _wParam, UINT _width, UINT _height);
 
 int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
 					_In_opt_ HINSTANCE _hPrevInstance,
@@ -19,23 +19,19 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
 	wc.lpfnWndProc = MainWndProc;
 	wc.hInstance = _hInstance;
 	wc.lpszClassName = mainWndClassName;
-
-	if (0 == RegisterClassW(&wc))
-		return 0;
+	RegisterClassW(&wc);
 
 	// Create the main window.
 	HWND hMainWindow = CreateWindowW(mainWndClassName, mainWndName, WS_OVERLAPPEDWINDOW & (~WS_THICKFRAME) & (~WS_MAXIMIZEBOX),
 									 CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 									 NULL, NULL, _hInstance, NULL);
-	if (NULL == hMainWindow)
-		return 0;
-
 	ShowWindow(hMainWindow, _nShowCmd);
 	UpdateWindow(hMainWindow);
 
 	return RunMessageLoop();
 }
 
+// Run the message loop. When the loop ends, it returns an exit code.
 int RunMessageLoop()
 {
 	BOOL bRet;
@@ -88,12 +84,12 @@ LRESULT CALLBACK MainWndProc(
 		// The window size has changed.
 		case WM_SIZE:
 		{
-			UINT width = LOWORD(_lParam);
-			UINT height = HIWORD(_lParam);
+			UINT newWidth = LOWORD(_lParam);
+			UINT newHeight = HIWORD(_lParam);
 
-			MainWndOnResize(_hWnd, width, height);
+			MainWndOnResize(_hWnd, _wParam, newWidth, newHeight);
 
-			return 0;
+			return 0; // If an application processes this message, it should return zero.
 		}
 
 		// The user closed an application window by clicking the Close button, or by using a keyboard shortcut such as ALT + F4.
@@ -125,7 +121,21 @@ LRESULT CALLBACK MainWndProc(
 	return DefWindowProc(_hWnd, _uMsg, _wParam, _lParam);
 }
 
-void MainWndOnResize(HWND _hWnd, UINT _width, UINT _height)
+void MainWndOnResize(HWND _hWnd, UINT _wParam, UINT _width, UINT _height)
 {
-
+	switch (_wParam)
+	{
+		case SIZE_RESTORED: // The window has been resized, but neither the SIZE_MINIMIZED nor SIZE_MAXIMIZED value applies.
+			break;
+		case SIZE_MINIMIZED:
+			break;
+		case SIZE_MAXSHOW:
+			break;
+		case SIZE_MAXIMIZED:
+			break;
+		case SIZE_MAXHIDE:
+			break;
+		default:
+			break;
+	}
 }
