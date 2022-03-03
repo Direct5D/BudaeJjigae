@@ -139,7 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ingredients\GameMain.cpp" />
     <ClCompile Include="Ingredients\main.cpp" />
+    <ClCompile Include="Ingredients\Timer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Ingredients\GameMain.h" />
+    <ClInclude Include="Ingredients\Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

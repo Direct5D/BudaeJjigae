@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include "GameMain.h"
 
 
 int RunMessageLoop();
@@ -27,6 +28,16 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
 									 NULL, NULL, _hInstance, NULL);
 	ShowWindow(hMainWindow, _nShowCmd);
 	UpdateWindow(hMainWindow);
+
+	// Create the game thread.
+	DWORD stackSize = 0; // uses the default size for the executable.
+	DWORD creationFlags = 0; // The thread runs immediately after creation.
+	DWORD threadId;
+	HANDLE hThread = CreateThread(NULL, stackSize, Bujji::GameThreadProc, hMainWindow, creationFlags, &threadId);
+	if (hThread == NULL)
+	{
+		return 0;
+	}
 
 	return RunMessageLoop();
 }
@@ -97,7 +108,9 @@ LRESULT CALLBACK MainWndProc(
 		{
 			const int result = MessageBoxW(_hWnd, L"Are you sure you want to quit?", L"Warning", MB_YESNO);
 			if (IDYES != result)
+			{
 				return 0; // Do nothing.
+			}
 
 			// DefWindowProc automatically calls DestroyWindow.
 			// DestroyWindow destroys the window and sends WM_DESTROY and WM_NCDESTROY messages
