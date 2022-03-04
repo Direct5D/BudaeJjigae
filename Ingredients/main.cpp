@@ -17,6 +17,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
 	const wchar_t mainWndName[] = L"Main Window";
 
 	WNDCLASS wc = { };
+	wc.style = CS_DBLCLKS;
 	wc.lpfnWndProc = MainWndProc;
 	wc.hInstance = _hInstance;
 	wc.lpszClassName = mainWndClassName;
@@ -58,7 +59,7 @@ int RunMessageLoop()
 		else
 		{
 			TranslateMessage(&msg);
-			DispatchMessageW(&msg);
+			DispatchMessageW(&msg); // Dispatch the message to the target window.
 		}
 	}
 
@@ -72,6 +73,9 @@ LRESULT CALLBACK MainWndProc(
 	WPARAM _wParam,
 	LPARAM _lParam)
 {
+	if (true == Bujji::GameMessageProc(_hWnd, _uMsg, _wParam, _lParam))
+		return 0; // Do nothing.
+
 	switch (_uMsg)
 	{
 		//case WM_CREATE:
@@ -103,25 +107,11 @@ LRESULT CALLBACK MainWndProc(
 			return 0; // If an application processes this message, it should return zero.
 		}
 
-		// The user closed an application window by clicking the Close button, or by using a keyboard shortcut such as ALT + F4.
-		case WM_CLOSE:
-		{
-			const int result = MessageBoxW(_hWnd, L"Are you sure you want to quit?", L"Warning", MB_YESNO);
-			if (IDYES != result)
-			{
-				return 0; // Do nothing.
-			}
-
-			// DefWindowProc automatically calls DestroyWindow.
-			// DestroyWindow destroys the window and sends WM_DESTROY and WM_NCDESTROY messages
-			break;
-		}
-
 		// The window is being destroyed.
 		// This message is sent after the window is removed from the screen.
 		case WM_DESTROY:
 		{
-			// Posts a WM_QUIT message to the thread's message queue.
+			// Posts a WM_QUIT message to the thread's message queue to break out the message loop.
 			PostQuitMessage(0);
 
 			return 0;
