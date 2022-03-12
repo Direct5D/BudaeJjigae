@@ -32,3 +32,4 @@ private:
 
 public:
 	static DWORD(WINAPI GameThreadProc)(LPVOID _lpThreadParameter);
+};

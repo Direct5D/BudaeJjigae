@@ -9,6 +9,8 @@ GamePlayer::GamePlayer(double _x, double _y, double _speed) : GameObject(_x, _y)
 {
 	m_PlayerSpeed = _speed;
 	m_PlayerState = STATE::STOP;
+	m_PlayerMovePosX = 0.0;
+	m_PlayerMovePosY = 0.0;
 }
 
 GamePlayer::~GamePlayer()

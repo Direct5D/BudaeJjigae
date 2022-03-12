@@ -18,7 +18,7 @@ protected:
 
 protected:
 	double m_X, m_Y;
-	
+
 public:
 	virtual void Update(LONGLONG _microseconds) = 0;
 };
