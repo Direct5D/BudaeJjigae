@@ -11,10 +11,10 @@ public:
 	virtual ~GamePlayer();
 
 protected:
-	double m_PlayerSpeed;
-	STATE m_PlayerState;
-	double m_PlayerMovePosX;
-	double m_PlayerMovePosY;
+	double m_Speed;
+	STATE m_State;
+	double m_MovePosX;
+	double m_MovePosY;
 
 public:
 	virtual void Update(LONGLONG _microsecondsPerUpdate) override;

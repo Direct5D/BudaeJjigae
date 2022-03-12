@@ -7,10 +7,10 @@
 
 GamePlayer::GamePlayer(double _x, double _y, double _speed) : GameObject(_x, _y)
 {
-	m_PlayerSpeed = _speed;
-	m_PlayerState = STATE::STOP;
-	m_PlayerMovePosX = 0.0;
-	m_PlayerMovePosY = 0.0;
+	m_Speed = _speed;
+	m_State = STATE::STOP;
+	m_MovePosX = 0.0;
+	m_MovePosY = 0.0;
 }
 
 GamePlayer::~GamePlayer()
@@ -23,18 +23,20 @@ LONGLONG lastTime;
 Timer gameTimer;
 #endif
 
+// Update one frame.
+// _microseconds indicates how many microseconds to update.
 void GamePlayer::Update(LONGLONG _microseconds)
 {
-	if (m_PlayerState == STATE::MOVE)
+	if (m_State == STATE::MOVE)
 	{
-		double moveX = (double)m_PlayerMovePosX;
-		double moveY = (double)m_PlayerMovePosY;
+		double moveX = (double)m_MovePosX;
+		double moveY = (double)m_MovePosY;
 
 		double deltaX = (moveX - m_X);
 		double deltaY = (moveY - m_Y);
 
 		double movDistance;
-		movDistance = m_PlayerSpeed * _microseconds;
+		movDistance = m_Speed * _microseconds;
 		movDistance /= (1000 * 1000);
 
 		double squaredHypotenuse = (deltaX * deltaX) + (deltaY * deltaY);
@@ -43,7 +45,7 @@ void GamePlayer::Update(LONGLONG _microseconds)
 		{
 			m_X = moveX;
 			m_Y = moveY;
-			m_PlayerState = STATE::STOP;
+			m_State = STATE::STOP;
 		}
 		else
 		{
@@ -58,7 +60,7 @@ void GamePlayer::Update(LONGLONG _microseconds)
 
 #ifdef _DEBUG
 		LONGLONG currentTime = gameTimer.GetMicroseconds();
-		if (lastTime + (1000 * 1000 * 0.0) < currentTime)
+		if (lastTime + (1000 * 1000 * 0.1) < currentTime)
 		{
 			DEBUG_PRINTF_A("GamePlayer::Update m_x:%f, m_Y:%f\n", m_X, m_Y);
 			lastTime = currentTime;
@@ -69,7 +71,7 @@ void GamePlayer::Update(LONGLONG _microseconds)
 
 void GamePlayer::Move(double _x, double _y)
 {
-	m_PlayerMovePosX = _x;
-	m_PlayerMovePosY = _y;
-	m_PlayerState = STATE::MOVE;
+	m_MovePosX = _x;
+	m_MovePosY = _y;
+	m_State = STATE::MOVE;
 }

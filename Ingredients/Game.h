@@ -9,6 +9,9 @@
 class Game
 {
 public:
+	static DWORD(WINAPI GameThreadProc)(LPVOID _lpThreadParameter);
+
+public:
 	Game();
 	virtual ~Game();
 
@@ -28,8 +31,5 @@ protected:
 private:
 	void ProcessInput();
 	void Update();
-	void Render(double _frame);
-
-public:
-	static DWORD(WINAPI GameThreadProc)(LPVOID _lpThreadParameter);
+	void Render(LONGLONG _microSeconds);
 };
