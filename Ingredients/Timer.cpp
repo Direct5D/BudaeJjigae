@@ -1,67 +1,65 @@
 #include "Timer.h"
 
 
-namespace Bujji
+Timer::Timer()
 {
-	Timer::Timer()
-	{
-		// TODO_LATER: Support for hardware that does not support QPC
-		QueryPerformanceFrequency(&m_Frequency);
-		Reset();
-	}
+	// TODO_LATER: Support for hardware that does not support QPC
+	QueryPerformanceFrequency(&m_Frequency);
+	Reset();
+}
 
-	Timer::~Timer()
-	{
+Timer::~Timer()
+{
 
-	}
+}
 
-	void Timer::Reset()
-	{
-		QueryPerformanceCounter(&m_StartingTime);
-	}
 
-	LONGLONG Timer::GetMilliseconds()
-	{
-		LARGE_INTEGER perfomanceCount;
-		QueryPerformanceCounter(&perfomanceCount);
+void Timer::Reset()
+{
+	QueryPerformanceCounter(&m_StartingTime);
+}
 
-		LONGLONG elapsedMicroseconds;
-		elapsedMicroseconds = (perfomanceCount.QuadPart - m_StartingTime.QuadPart);
+LONGLONG Timer::GetMilliseconds()
+{
+	LARGE_INTEGER perfomanceCount;
+	QueryPerformanceCounter(&perfomanceCount);
 
-		// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
-		elapsedMicroseconds *= 1000;
-		elapsedMicroseconds /= m_Frequency.QuadPart;
+	LONGLONG elapsedMicroseconds;
+	elapsedMicroseconds = (perfomanceCount.QuadPart - m_StartingTime.QuadPart);
 
-		return elapsedMicroseconds;
-	}
+	// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
+	elapsedMicroseconds *= 1000;
+	elapsedMicroseconds /= m_Frequency.QuadPart;
 
-	LONGLONG Timer::GetMicroseconds()
-	{
-		LARGE_INTEGER perfomanceCount;
-		QueryPerformanceCounter(&perfomanceCount);
+	return elapsedMicroseconds;
+}
 
-		LONGLONG elapsedMicroseconds;
-		elapsedMicroseconds = (perfomanceCount.QuadPart - m_StartingTime.QuadPart);
+LONGLONG Timer::GetMicroseconds()
+{
+	LARGE_INTEGER perfomanceCount;
+	QueryPerformanceCounter(&perfomanceCount);
 
-		// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
-		elapsedMicroseconds *= 1000000;
-		elapsedMicroseconds /= m_Frequency.QuadPart;
+	LONGLONG elapsedMicroseconds;
+	elapsedMicroseconds = (perfomanceCount.QuadPart - m_StartingTime.QuadPart);
 
-		return elapsedMicroseconds;
-	}
+	// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
+	elapsedMicroseconds *= 1000000;
+	elapsedMicroseconds /= m_Frequency.QuadPart;
 
-	LONGLONG Timer::GetNanoseconds()
-	{
-		LARGE_INTEGER perfomanceCount;
-		QueryPerformanceCounter(&perfomanceCount);
+	return elapsedMicroseconds;
+}
 
-		LONGLONG elapsedNanoseconds;
-		elapsedNanoseconds = (perfomanceCount.QuadPart - m_StartingTime.QuadPart);
+LONGLONG Timer::GetNanoseconds()
+{
+	LARGE_INTEGER perfomanceCount;
+	QueryPerformanceCounter(&perfomanceCount);
 
-		// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
-		elapsedNanoseconds *= 1000000000;
-		elapsedNanoseconds /= m_Frequency.QuadPart;
+	LONGLONG elapsedNanoseconds;
+	elapsedNanoseconds = (perfomanceCount.QuadPart - m_StartingTime.QuadPart);
 
-		return elapsedNanoseconds;
-	}
+	// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
+	elapsedNanoseconds *= 1000000000;
+	elapsedNanoseconds /= m_Frequency.QuadPart;
+
+	return elapsedNanoseconds;
 }

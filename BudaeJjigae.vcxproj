@@ -139,17 +139,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ingredients\BudaeJjigae.cpp" />
     <ClCompile Include="Ingredients\Debug.cpp" />
-    <ClCompile Include="Ingredients\GameMain.cpp" />
+    <ClCompile Include="Ingredients\Game.cpp" />
     <ClCompile Include="Ingredients\GameObject.cpp" />
+    <ClCompile Include="Ingredients\GamePlayer.cpp" />
     <ClCompile Include="Ingredients\main.cpp" />
     <ClCompile Include="Ingredients\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ingredients\BudaeJjigae.h" />
     <ClInclude Include="Ingredients\Debug.h" />
-    <ClInclude Include="Ingredients\GameMain.h" />
+    <ClInclude Include="Ingredients\Game.h" />
     <ClInclude Include="Ingredients\GameObject.h" />
+    <ClInclude Include="Ingredients\GamePlayer.h" />
     <ClInclude Include="Ingredients\Timer.h" />
+    <ClInclude Include="Ingredients\Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

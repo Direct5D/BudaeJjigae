@@ -1,23 +1,33 @@
 #include "Debug.h"
+#include <Windows.h>
 #include <stdarg.h>
+#include <stdio.h>
 
 
-void DebugPrintf(const char* fmt, ...)
+#ifdef _DEBUG
+void DebugPrintfA(const char* _format, ...)
 {
-	va_list argp;
-	va_start(argp, fmt);
-	char dbg_out[4096];
-	vsprintf_s(dbg_out, fmt, argp);
-	va_end(argp);
-	OutputDebugStringA(dbg_out);
+	char buf[1024];
+
+	va_list vaList;
+	va_start(vaList, _format);
+	vsnprintf(buf, sizeof(buf), _format, vaList);
+	va_end(vaList);
+
+	buf[_countof(buf) - 1] = '\0';
+	OutputDebugStringA(buf);
 }
 
-void DebugPrintW(const wchar_t* fmt, ...)
+void DebugPrintfW(const wchar_t* _format, ...)
 {
-	va_list argp;
-	va_start(argp, fmt);
-	wchar_t dbg_out[4096];
-	vswprintf_s(dbg_out, fmt, argp);
-	va_end(argp);
-	OutputDebugStringW(dbg_out);
+	wchar_t buf[1024];
+
+	va_list vaList;
+	va_start(vaList, _format);
+	_vsnwprintf_s(buf, sizeof(buf), _format, vaList);
+	va_end(vaList);
+
+	buf[_countof(buf) - 1] = '\0';
+	OutputDebugStringW(buf);
 }
+#endif
