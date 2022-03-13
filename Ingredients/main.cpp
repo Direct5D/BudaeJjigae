@@ -11,6 +11,8 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
 					_In_ int _nShowCmd
 )
 {
+	DEBUG_PRINTF_A("wWinMain()\n");
+
 	double playerSpeed = 300.0;
 	LPCWSTR wndName = L"Window";
 	LPCWSTR wndClassName = L"Window Class";
@@ -21,16 +23,19 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
 	wc.lpfnWndProc = BudaeJjigae::BujjiWndProc;
 	wc.hInstance = _hInstance;
 	wc.lpszClassName = wndClassName;
-	RegisterClassW(&wc);
+	if (0 == RegisterClassW(&wc))
+		return 0;
 
-	// Create, initialize, and run the game.
+	// Create and initialize the game.
 	BudaeJjigae bujji(playerSpeed);
-	bujji.InitWindow(&wc, wndName, _nShowCmd);
-	bujji.Run();
 
+	if (false == bujji.Init(&wc, wndName, _nShowCmd))
+		return 0;
+
+	// TODO: Terminates the game's own message loop and game procedures when the game window is destroyed.
 	int exitCode = RunMessageLoop();
 
-	// TODO: must wait for all games to end.
+	bujji.TerminateThread();
 
 	return exitCode;
 }
@@ -38,6 +43,8 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
 // Run the message loop. When the loop ends, it returns an exit code.
 int RunMessageLoop()
 {
+	DEBUG_PRINTF_A("RunMessageLoop()\n");
+
 	BOOL bRet;
 	MSG msg;
 

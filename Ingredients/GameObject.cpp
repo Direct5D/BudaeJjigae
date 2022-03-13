@@ -1,13 +1,14 @@
 #include "GameObject.h"
+#include "Debug.h"
 
 
-GameObject::GameObject(double _x, double _y)
+GameObject::GameObject(double _speed)
 {
-	m_X = _x;
-	m_Y = _y;
+	DEBUG_PRINTF_A("GameObject::GameObject()\n");
+	m_Speed = _speed;
 }
 
 GameObject::~GameObject()
 {
-
+	DEBUG_PRINTF_A("GameObject::~GameObject()\n");
 }

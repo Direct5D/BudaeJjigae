@@ -3,33 +3,31 @@
 #include <Windows.h>
 #include <vector>
 #include <memory>
-#include "GameObject.h"
 
+
+constexpr auto MICROSECONDS_PER_UPDATE = 1000;
 
 class Game
 {
-public:
+private:
 	static DWORD(WINAPI GameThreadProc)(LPVOID _lpThreadParameter);
 
 public:
 	Game();
 	virtual ~Game();
 
-protected:
+private:
 	HWND m_WindowHandle;
 	HANDLE m_ThreadHandle;
-private:
-	bool m_ExitThreadFlag;
-	std::vector<std::shared_ptr<GameObject>> m_GameObjectVector;
+	bool m_TerminateThread;
 
 public:
-	bool InitWindow(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd);
-	bool Run();
-	virtual void OnRightClick(WORD _x, WORD _y) = 0;
+	bool Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd);
+	void TerminateThread();
 protected:
-	bool AddGameObject(std::shared_ptr<GameObject> _gameObjectPtr);
+	virtual void OnRightClick(WORD _x, WORD _y) = 0;
 private:
 	void ProcessInput();
-	void Update();
-	void Render(LONGLONG _microSeconds);
+	virtual void Update() = 0;
+	virtual void Render(LONGLONG _microSeconds) = 0;
 };

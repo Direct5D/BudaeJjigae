@@ -9,6 +9,7 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProc(
 	WPARAM wParam,
 	LPARAM lParam)
 {
+	//DEBUG_PRINTF_A("BujjiWndProc::~BujjiWndProc()\n");
 	switch (uMsg)
 	{
 		case WM_PAINT:
@@ -27,24 +28,22 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProc(
 
 		case WM_KEYDOWN:
 		{
+			//DEBUG_PRINTF_A("vKeyCode: 0x%X\n", vKeyCode);
 			// If it's a letter key, you can't distinguish case by case.
 			WPARAM vKeyCode = wParam;
-
-			DEBUG_PRINTF_A("vKeyCode: 0x%X\n", vKeyCode);
 			break;
 		}
 
 		case WM_CHAR:
 		{
+			//DEBUG_PRINTF_A("keyCharCode: %c\n", keyCharCode);
 			WPARAM keyCharCode = wParam;
-
-			DEBUG_PRINTF_A("keyCharCode: %c\n", keyCharCode);
 			break;
 		}
 
 		case WM_LBUTTONDOWN:
 		{
-			DEBUG_PRINTF_A("WM_LBUTTONDOWN\n");
+			//DEBUG_PRINTF_A("WM_LBUTTONDOWN\n");
 			break;
 		}
 
@@ -52,7 +51,7 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProc(
 
 		case WM_LBUTTONDBLCLK:
 		{
-			DEBUG_PRINTF_A("WM_LBUTTONDBLCLK\n");
+			//DEBUG_PRINTF_A("WM_LBUTTONDBLCLK\n");
 			break;
 		}
 
@@ -62,7 +61,7 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProc(
 			WORD y = GET_Y_LPARAM(lParam);
 
 			// TODO: Consider concurrency.
-			BudaeJjigae* pBujji = (BudaeJjigae*)GetWindowLongPtrW(hWnd, GWLP_USERDATA);
+			BudaeJjigae* pBujji = (BudaeJjigae*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 			if (pBujji != nullptr)
 				pBujji->OnRightClick(x, y);
 
@@ -129,6 +128,7 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProc(
 WINDOWPLACEMENT g_wpPrev = { sizeof(g_wpPrev) };
 void BudaeJjigae::OnLButtonUp(HWND hwnd, int x, int y, UINT keyFlags)
 {
+	DEBUG_PRINTF_A("BujjiWndProc::OnLButtonUp()\n");
 	DWORD dwStyle = GetWindowLong(hwnd, GWL_STYLE);
 	if (dwStyle & WS_OVERLAPPEDWINDOW)
 	{
@@ -157,8 +157,9 @@ void BudaeJjigae::OnLButtonUp(HWND hwnd, int x, int y, UINT keyFlags)
 	}
 }
 
-void BudaeJjigae::OnResize(HWND _hWnd, UINT _wParam, UINT _width, UINT _height)
+void BudaeJjigae::OnResize(HWND _hWnd, WPARAM _wParam, UINT _width, UINT _height)
 {
+	//DEBUG_PRINTF_A("BujjiWndProc::OnResize()\n");
 	switch (_wParam)
 	{
 		case SIZE_RESTORED: // The window has been resized, but neither the SIZE_MINIMIZED nor SIZE_MAXIMIZED value applies.
@@ -177,19 +178,21 @@ void BudaeJjigae::OnResize(HWND _hWnd, UINT _wParam, UINT _width, UINT _height)
 }
 
 
-BudaeJjigae::BudaeJjigae(double _speed) : Game()
+BudaeJjigae::BudaeJjigae(double _speed) : Game2D()
 {
-	m_PlayerPtr = std::shared_ptr<GamePlayer>(new GamePlayer(0, 0, _speed));
+	DEBUG_PRINTF_A("BudaeJjigae::BudaeJjigae()\n");
+	m_PlayerPtr = std::shared_ptr<GamePlayer2D>(new GamePlayer2D(0, 0, _speed));
 	AddGameObject(m_PlayerPtr);
 }
 
 BudaeJjigae::~BudaeJjigae()
 {
-
+	DEBUG_PRINTF_A("BudaeJjigae::~BudaeJjigae()\n");
 }
 
 
 void BudaeJjigae::OnRightClick(WORD _x, WORD _y)
 {
+	DEBUG_PRINTF_A("BudaeJjigae::OnRightClick()\n");
 	m_PlayerPtr->Move(_x, _y);
 }

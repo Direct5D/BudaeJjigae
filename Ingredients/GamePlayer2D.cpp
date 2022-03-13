@@ -1,22 +1,23 @@
-#include "GamePlayer.h"
+#include "GamePlayer2D.h"
 #include "Debug.h"
 #include "Util.h"
 #include "Timer.h"
 #include <cmath>
 
 
-GamePlayer::GamePlayer(double _x, double _y, double _speed) : GameObject(_x, _y)
+GamePlayer2D::GamePlayer2D(double _x, double _y, double _speed) : GameObject2D(_x, _y, _speed)
 {
-	m_Speed = _speed;
+	DEBUG_PRINTF_A("GamePlayer2D::GamePlayer2D()\n");
 	m_State = STATE::STOP;
 	m_MovePosX = 0.0;
 	m_MovePosY = 0.0;
 }
 
-GamePlayer::~GamePlayer()
+GamePlayer2D::~GamePlayer2D()
 {
-
+	DEBUG_PRINTF_A("GamePlayer2D::~GamePlayer2D()\n");
 }
+
 
 #ifdef _DEBUG
 LONGLONG lastTime;
@@ -25,8 +26,9 @@ Timer gameTimer;
 
 // Update one frame.
 // _microseconds indicates how many microseconds to update.
-void GamePlayer::Update(LONGLONG _microseconds)
+void GamePlayer2D::Update(LONGLONG _microseconds)
 {
+	//DEBUG_PRINTF_A("GamePlayer2D::Update()\n");
 	if (m_State == STATE::MOVE)
 	{
 		double moveX = (double)m_MovePosX;
@@ -69,8 +71,9 @@ void GamePlayer::Update(LONGLONG _microseconds)
 	}
 }
 
-void GamePlayer::Move(double _x, double _y)
+void GamePlayer2D::Move(double _x, double _y)
 {
+	DEBUG_PRINTF_A("GamePlayer2D::Move()\n");
 	m_MovePosX = _x;
 	m_MovePosY = _y;
 	m_State = STATE::MOVE;

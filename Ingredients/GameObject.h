@@ -6,18 +6,11 @@
 class GameObject
 {
 public:
-	GameObject(double _x, double _y);
+	GameObject(double _speed = 0);
 	virtual ~GameObject();
 
 protected:
-	enum class STATE
-	{
-		STOP,
-		MOVE
-	};
-
-protected:
-	double m_X, m_Y;
+	double m_Speed;
 
 public:
 	virtual void Update(LONGLONG _microseconds) = 0;

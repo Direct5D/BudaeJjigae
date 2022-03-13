@@ -1,8 +1,10 @@
 #include "Timer.h"
+#include "Debug.h"
 
 
 Timer::Timer()
 {
+	DEBUG_PRINTF_A("Timer()\n");
 	// TODO_LATER: Support for hardware that does not support QPC
 	QueryPerformanceFrequency(&m_Frequency);
 	Reset();
@@ -10,7 +12,7 @@ Timer::Timer()
 
 Timer::~Timer()
 {
-
+	DEBUG_PRINTF_A("~Timer()\n");
 }
 
 
