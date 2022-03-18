@@ -27,10 +27,16 @@
     <ClCompile Include="Ingredients\GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ingredients\GamePlayer.cpp">
+    <ClCompile Include="Ingredients\GameObject2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ingredients\GamePlayer2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Ingredients\Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ingredients\Game2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Ingredients\BudaeJjigae.cpp">
@@ -47,13 +53,19 @@
     <ClInclude Include="Ingredients\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ingredients\GamePlayer.h">
+    <ClInclude Include="Ingredients\GameObject2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ingredients\GamePlayer2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Ingredients\Util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Ingredients\Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ingredients\Game2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Ingredients\BudaeJjigae.h">

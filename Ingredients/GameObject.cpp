@@ -12,3 +12,9 @@ GameObject::~GameObject()
 {
 	DEBUG_PRINTF_A("GameObject::~GameObject()\n");
 }
+
+
+double GameObject::GetSpeed()
+{
+	return m_Speed;
+}

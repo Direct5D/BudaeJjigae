@@ -62,7 +62,7 @@ void GamePlayer2D::Update(LONGLONG _microseconds)
 
 #ifdef _DEBUG
 		LONGLONG currentTime = gameTimer.GetMicroseconds();
-		if (lastTime + (1000 * 1000 * 0.1) < currentTime)
+		if (lastTime + ((LONGLONG)1000 * 1000 * 0.1) < currentTime)
 		{
 			DEBUG_PRINTF_A("GamePlayer::Update m_x:%f, m_Y:%f\n", m_X, m_Y);
 			lastTime = currentTime;

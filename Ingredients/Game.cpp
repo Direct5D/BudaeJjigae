@@ -74,16 +74,20 @@ bool Game::Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd)
 	if (m_WindowHandle == NULL)
 	{
 		// Create a game window.
-		HWND hWnd = CreateWindowW(_pWndClass->lpszClassName, _wndName, WS_OVERLAPPEDWINDOW & (~WS_THICKFRAME) & (~WS_MAXIMIZEBOX),
-										 CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-										 NULL, NULL, _pWndClass->hInstance, NULL);
+		//HWND hWnd = CreateWindowW(_pWndClass->lpszClassName, _wndName, WS_OVERLAPPEDWINDOW & (~WS_THICKFRAME) & (~WS_MAXIMIZEBOX),
+		//								 CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+		//								 NULL, NULL, _pWndClass->hInstance, NULL);
+		HWND hWnd = CreateWindowW(_pWndClass->lpszClassName, _wndName, WS_OVERLAPPEDWINDOW,
+								 CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+								 NULL, NULL, _pWndClass->hInstance, NULL);
 		if (hWnd == NULL)
 			return false;
+
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)this);
 
 		ShowWindow(hWnd, _nShowCmd);
 
 		SetLastError(0);
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)this);
 		if (0 != GetLastError())
 			return false;
 

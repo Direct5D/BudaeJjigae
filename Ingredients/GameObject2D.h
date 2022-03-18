@@ -12,4 +12,8 @@ public:
 
 protected:
 	double m_X, m_Y;
+
+public:
+	double GetX();
+	double GetY();
 };

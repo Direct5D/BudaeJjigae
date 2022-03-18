@@ -14,3 +14,14 @@ GameObject2D::~GameObject2D()
 {
 	DEBUG_PRINTF_A("GameObject2D::~GameObject2D()\n");
 }
+
+
+double GameObject2D::GetX()
+{
+	return m_X;
+}
+
+double GameObject2D::GetY()
+{
+	return m_Y;
+}

@@ -13,5 +13,6 @@ protected:
 	double m_Speed;
 
 public:
+	double GetSpeed();
 	virtual void Update(LONGLONG _microseconds) = 0;
 };

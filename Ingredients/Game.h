@@ -16,15 +16,18 @@ public:
 	Game();
 	virtual ~Game();
 
-private:
+protected:
 	HWND m_WindowHandle;
+
+private:
 	HANDLE m_ThreadHandle;
 	bool m_TerminateThread;
 
 public:
-	bool Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd);
+	virtual bool Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd);
 	void TerminateThread();
 protected:
+	virtual void OnResize(WPARAM _wParam, UINT _width, UINT _height) = 0;
 	virtual void OnRightClick(WORD _x, WORD _y) = 0;
 private:
 	void ProcessInput();

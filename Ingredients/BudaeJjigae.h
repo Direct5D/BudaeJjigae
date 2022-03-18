@@ -8,10 +8,7 @@
 class BudaeJjigae : public Game2D
 {
 public:
-	static LRESULT CALLBACK BujjiWndProc(HWND _hWnd, UINT _uMsg, WPARAM _wParam, LPARAM _lParam);
-private:
-	static void OnLButtonUp(HWND hwnd, int x, int y, UINT keyFlags);
-	static void OnResize(HWND _hWnd, WPARAM _wParam, UINT _width, UINT _height);
+	static LRESULT CALLBACK BujjiWndProcW(HWND _hWnd, UINT _uMsg, WPARAM _wParam, LPARAM _lParam);
 
 public:
 	BudaeJjigae(double _speed);
