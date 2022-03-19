@@ -17,20 +17,22 @@ public:
 	virtual ~Game();
 
 protected:
-	HWND m_WindowHandle;
+	HWND m_WindowHandle = NULL;
 
 private:
-	HANDLE m_ThreadHandle;
-	bool m_TerminateThread;
+	HANDLE m_ThreadHandle = NULL;
+	bool m_TerminateThread = false;
 
 public:
 	virtual bool Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd);
 	void TerminateThread();
 protected:
-	virtual void OnResize(WPARAM _wParam, UINT _width, UINT _height) = 0;
-	virtual void OnRightClick(WORD _x, WORD _y) = 0;
+	virtual void OnWindowResize(WPARAM _wParam, UINT _width, UINT _height) = 0;
 private:
-	void ProcessInput();
+	virtual void OnRButtonDown(WORD _x, WORD _y) = 0;
+	virtual void OnRButtonUp(WORD _x, WORD _y) = 0;
+	virtual void ProcessInput() = 0;
 	virtual void Update() = 0;
-	virtual void Render(LONGLONG _microSeconds) = 0;
+	virtual void Render(LONGLONG _lagTime) = 0;
+	virtual void OnTerminate() = 0;
 };

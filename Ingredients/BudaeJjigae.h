@@ -16,7 +16,10 @@ public:
 
 private:
 	std::shared_ptr<GamePlayer2D> m_PlayerPtr;
+	bool IsPlayerMoving = false;
 
 private:
-	virtual void OnRightClick(WORD _x, WORD _y) override;
+	virtual void OnRButtonDown(WORD _x, WORD _y) override;
+	virtual void OnRButtonUp(WORD _x, WORD _y) override;
+	virtual void ProcessInput() override;
 };

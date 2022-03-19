@@ -7,6 +7,7 @@
 DWORD WINAPI Game::GameThreadProc(LPVOID _lpParameter)
 {
 	DEBUG_PRINTF_A("Game::GameThreadProc()\n");
+
 	Game* pGame = (Game*)_lpParameter;
 
 	Timer gameTimer;
@@ -32,6 +33,8 @@ DWORD WINAPI Game::GameThreadProc(LPVOID _lpParameter)
 		pGame->Render(lagTime); // 0 <= (lagTime / MICROSECONDS_PER_UPDATE) < 1
 	}
 
+	pGame->OnTerminate();
+
 	DEBUG_PRINTF_A("Game::GameThreadProc(): return 0\n");
 	return 0; // Do not use STILL_ACTIVE (259) as it indicates that the thread is not terminated.
 }
@@ -39,10 +42,6 @@ DWORD WINAPI Game::GameThreadProc(LPVOID _lpParameter)
 Game::Game()
 {
 	DEBUG_PRINTF_A("Game::Game()\n");
-
-	m_WindowHandle = NULL;
-	m_ThreadHandle = NULL;
-	m_TerminateThread = false;
 }
 
 // You must call the TerminateThread() before calling the destructor.
@@ -68,6 +67,7 @@ Game::~Game()
 bool Game::Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd)
 {
 	DEBUG_PRINTF_A("Game::Init()\n");
+
 	if (m_WindowHandle != NULL && m_ThreadHandle != NULL)
 		return true;
 
@@ -119,15 +119,9 @@ void Game::TerminateThread()
 {
 	DEBUG_PRINTF_A("Game::TerminateThread()\n");
 
-	if (m_WindowHandle == NULL || m_ThreadHandle == NULL || m_TerminateThread)
-		return;
-
-	m_TerminateThread = true;
-	WaitForSingleObject(m_ThreadHandle, INFINITE);
-}
-
-
-void Game::ProcessInput()
-{
-	//DEBUG_PRINTF_A("Game::ProcessInput()\n");
+	if (m_ThreadHandle != NULL)
+	{
+		m_TerminateThread = true;
+		WaitForSingleObject(m_ThreadHandle, INFINITE);
+	}
 }
