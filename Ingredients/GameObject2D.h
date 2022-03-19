@@ -16,4 +16,5 @@ protected:
 public:
 	double GetX();
 	double GetY();
+	virtual void SimulatePos(LONGLONG _microseconds, double& _outX, double& _outY) = 0;
 };
