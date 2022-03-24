@@ -6,7 +6,7 @@
 // This is the game thread procedure. It is used when creating a thread using the CreateThread function.
 DWORD WINAPI Game::GameThreadProc(LPVOID _lpParameter)
 {
-	DEBUG_PRINTF_A("Game::GameThreadProc()\n");
+	DEBUG_PRINTF_A("Game::GameThreadProc(0x%p)\n", _lpParameter);
 
 	Game* pGame = (Game*)_lpParameter;
 
@@ -35,19 +35,25 @@ DWORD WINAPI Game::GameThreadProc(LPVOID _lpParameter)
 
 	pGame->OnTerminate();
 
-	DEBUG_PRINTF_A("Game::GameThreadProc(): return 0\n");
+	DEBUG_PRINTF_A("Game::GameThreadProc(0x%p): return 0\n", _lpParameter);
 	return 0; // Do not use STILL_ACTIVE (259) as it indicates that the thread is not terminated.
 }
 
 Game::Game()
 {
-	DEBUG_PRINTF_A("Game::Game()\n");
+	DEBUG_PRINTF_A("0x%p Game::Game()\n", this);
 }
 
 // You must call the TerminateThread() before calling the destructor.
 Game::~Game()
 {
-	DEBUG_PRINTF_A("Game::~Game()\n");
+	DEBUG_PRINTF_A("0x%p Game::~Game()\n", this);
+
+	if (m_ThreadHandle != NULL)
+	{
+		CloseHandle(m_ThreadHandle);
+		m_ThreadHandle = NULL;
+	}
 
 	if (m_WindowHandle != NULL)
 	{
@@ -55,43 +61,34 @@ Game::~Game()
 		CloseWindow(m_WindowHandle);
 		m_WindowHandle = NULL;
 	}
-
-	if (m_ThreadHandle != NULL)
-	{
-		CloseHandle(m_ThreadHandle);
-		m_ThreadHandle = NULL;
-	}
 }
 
 
 bool Game::Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd)
 {
-	DEBUG_PRINTF_A("Game::Init()\n");
+	DEBUG_PRINTF_A("0x%p Game::Init()\n", this);
 
-	if (m_WindowHandle != NULL && m_ThreadHandle != NULL)
-		return true;
+	bool result = true;
 
 	if (m_WindowHandle == NULL)
 	{
 		// Create a game window.
-		//HWND hWnd = CreateWindowW(_pWndClass->lpszClassName, _wndName, WS_OVERLAPPEDWINDOW & (~WS_THICKFRAME) & (~WS_MAXIMIZEBOX),
-		//								 CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-		//								 NULL, NULL, _pWndClass->hInstance, NULL);
+		/*HWND hWnd = CreateWindowW(_pWndClass->lpszClassName, _wndName, WS_OVERLAPPEDWINDOW & (~WS_THICKFRAME) & (~WS_MAXIMIZEBOX),
+								  CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+								  NULL, NULL, _pWndClass->hInstance, NULL);*/
 		HWND hWnd = CreateWindowW(_pWndClass->lpszClassName, _wndName, WS_OVERLAPPEDWINDOW,
 								 CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 								 NULL, NULL, _pWndClass->hInstance, NULL);
 		if (hWnd == NULL)
-			return false;
-
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)this);
-
-		ShowWindow(hWnd, _nShowCmd);
-
-		SetLastError(0);
-		if (0 != GetLastError())
-			return false;
-
-		m_WindowHandle = hWnd;
+		{
+			result = false;
+		}
+		else
+		{
+			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)this);
+			ShowWindow(hWnd, _nShowCmd);
+			m_WindowHandle = hWnd;
+		}
 	}
 
 	// Creates and runs a game thread.
@@ -105,23 +102,40 @@ bool Game::Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd)
 
 		HANDLE hThread = CreateThread(NULL, stackSize, Game::GameThreadProc, lpParameter, creationFlags, &threadId);
 		if (hThread == NULL)
-			return false;
-
-		m_ThreadHandle = hThread;
-		return true;
+		{
+			result = false;
+		}
+		else
+		{
+			m_ThreadHandle = hThread;
+		}
 	}
 
-	return true;
+	if (false == OnInit())
+		result = false;
+
+	if (result == false)
+		Terminate();
+
+	return result;
 }
 
-// You must call the TerminateThread() before calling the destructor.
-void Game::TerminateThread()
+// You must call the Terminate() before calling the destructor.
+void Game::Terminate()
 {
-	DEBUG_PRINTF_A("Game::TerminateThread()\n");
+	DEBUG_PRINTF_A("0x%p Game::Terminate()\n", this);
 
 	if (m_ThreadHandle != NULL)
 	{
 		m_TerminateThread = true;
 		WaitForSingleObject(m_ThreadHandle, INFINITE);
+		CloseHandle(m_ThreadHandle);
+		m_ThreadHandle = NULL;
+	}
+
+	if (m_WindowHandle != NULL)
+	{
+		CloseWindow(m_WindowHandle);
+		m_WindowHandle = NULL;
 	}
 }

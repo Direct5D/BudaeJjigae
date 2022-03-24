@@ -4,7 +4,7 @@
 
 Timer::Timer()
 {
-	DEBUG_PRINTF_A("Timer()\n");
+	DEBUG_PRINTF_A("0x%p Timer::Timer()\n", this);
 	// TODO_LATER: Support for hardware that does not support QPC
 	QueryPerformanceFrequency(&m_Frequency);
 	Reset();
@@ -12,7 +12,7 @@ Timer::Timer()
 
 Timer::~Timer()
 {
-	DEBUG_PRINTF_A("~Timer()\n");
+	DEBUG_PRINTF_A("0x%p Timer::~Timer()\n", this);
 }
 
 

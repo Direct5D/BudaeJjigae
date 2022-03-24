@@ -13,7 +13,7 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
 {
 	DEBUG_PRINTF_A("wWinMain()\n");
 
-	double playerSpeed = 1000.0;
+	double playerSpeed = 400.0;
 	LPCWSTR wndName = L"Window";
 	LPCWSTR wndClassName = L"Window Class";
 
@@ -38,8 +38,8 @@ int WINAPI wWinMain(_In_ HINSTANCE _hInstance,
 	// TODO: Terminates the game's own message loop and game procedures when the game window is destroyed.
 	int exitCode = RunMessageLoop();
 
-	bujji.TerminateThread();
-	//bujji2.TerminateThread();
+	bujji.Terminate();
+	//bujji2.Terminate();
 
 	return exitCode;
 }

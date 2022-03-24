@@ -1,6 +1,8 @@
 #include "BudaeJjigae.h"
 #include "Debug.h"
+#include "Util.h"
 #include <Windowsx.h>
+#include "Projectile2D.h"
 
 
 LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
@@ -38,13 +40,13 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 		{
 			//DEBUG_PRINTF_A("WM_SIZE\n");
 
-			UINT newWidth = LOWORD(lParam);
-			UINT newHeight = HIWORD(lParam);
+			//UINT newWidth = LOWORD(lParam);
+			//UINT newHeight = HIWORD(lParam);
 
-			// TODO: Consider concurrency.
-			BudaeJjigae* pBujji = (BudaeJjigae*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-			if (pBujji != nullptr)
-				pBujji->OnWindowResize(wParam, newWidth, newHeight);
+			//// TODO: Consider concurrency.
+			//BudaeJjigae* pBujji = (BudaeJjigae*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+			//if (pBujji != nullptr)
+			//	pBujji->OnWindowResize(wParam, newWidth, newHeight);
 
 			return 0; // If an application processes this message, it should return zero.
 		}
@@ -77,9 +79,15 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 
 		case WM_KEYDOWN:
 		{
+			//DEBUG_PRINTF_A("WM_KEYDOWN\n");
+
 			// If it's a letter key, you can't distinguish case by case.
 			WPARAM vKeyCode = wParam;
-			DEBUG_PRINTF_A("WM_KEYDOWN: vKeyCode: 0x%X\n", vKeyCode);
+
+			BudaeJjigae* pBujji = (BudaeJjigae*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+			if (pBujji != nullptr)
+				pBujji->OnKeyDown(vKeyCode);
+
 			break;
 		}
 
@@ -92,13 +100,22 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 
 		case WM_LBUTTONDOWN:
 		{
-			DEBUG_PRINTF_A("WM_LBUTTONDOWN\n");
+			//DEBUG_PRINTF_A("WM_LBUTTONDOWN\n");
+
+			WORD x = GET_X_LPARAM(lParam);
+			WORD y = GET_Y_LPARAM(lParam);
+
+			// TODO: Consider concurrency.
+			BudaeJjigae* pBujji = (BudaeJjigae*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+			if (pBujji != nullptr)
+				pBujji->OnLButtonDown(x, y);
+
 			break;
 		}
 
 		case WM_LBUTTONUP:
 		{
-			DEBUG_PRINTF_A("WM_LBUTTONUP\n");
+			//DEBUG_PRINTF_A("WM_LBUTTONUP\n");
 			break;
 		}
 
@@ -110,7 +127,7 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 
 		case WM_RBUTTONDOWN:
 		{
-			DEBUG_PRINTF_A("WM_RBUTTONDOWN\n");
+			//DEBUG_PRINTF_A("WM_RBUTTONDOWN\n");
 
 			WORD x = GET_X_LPARAM(lParam);
 			WORD y = GET_Y_LPARAM(lParam);
@@ -125,7 +142,7 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 
 		case WM_RBUTTONUP:
 		{
-			DEBUG_PRINTF_A("WM_RBUTTONUP\n");
+			//DEBUG_PRINTF_A("WM_RBUTTONUP\n");
 
 			WORD x = GET_X_LPARAM(lParam);
 			WORD y = GET_Y_LPARAM(lParam);
@@ -154,28 +171,160 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 
 BudaeJjigae::BudaeJjigae(double _speed) : Game2D(), m_PlayerPtr(new GamePlayer2D(0, 0, _speed))
 {
-	DEBUG_PRINTF_A("BudaeJjigae::BudaeJjigae()\n");
+	DEBUG_PRINTF_A("0x%p BudaeJjigae::BudaeJjigae()\n", this);
 	AddGameObject(m_PlayerPtr);
 }
 
 BudaeJjigae::~BudaeJjigae()
 {
-	DEBUG_PRINTF_A("BudaeJjigae::~BudaeJjigae()\n");
+	DEBUG_PRINTF_A("0x%p BudaeJjigae::~BudaeJjigae()\n", this);
 }
 
 
+void BudaeJjigae::OnKeyDown(WPARAM _vKeyCode)
+{
+	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnKeyDown(0x%02X)\n", this, _vKeyCode);
+
+	if ('Q' <= _vKeyCode && _vKeyCode <= 'R')
+	{
+		m_IsSkillAiming = !m_IsSkillAiming; // Toggle
+	}
+}
+
+void BudaeJjigae::OnLButtonDown(WORD _x, WORD _y)
+{
+	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnLButtonDown(%d, %d)\n", this, _x, _y);
+
+	if (m_IsSkillAiming)
+	{
+		CastSkill(_x, _y);
+		m_IsSkillAiming = false;
+	}
+}
+
 void BudaeJjigae::OnRButtonDown(WORD _x, WORD _y)
 {
+	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnRButtonDown(%d, %d)\n", this, _x, _y);
+
 	// TODO: Move only when certain conditions are met.
 	{
+		// TODO: Convert screen pos to game pos.
 		m_PlayerPtr->Move(_x, _y);
-		IsPlayerMoving = true;
+		m_IsPlayerMoving = true;
 	}
 }
 
 void BudaeJjigae::OnRButtonUp(WORD _x, WORD _y)
 {
-	IsPlayerMoving = false;
+	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnRButtonUp(%d, %d)\n", this, _x, _y);
+	m_IsPlayerMoving = false;
+}
+
+enum class RangeType
+{
+	Fixed,
+	MinMax
+};
+
+bool BudaeJjigae::CastSkill(double _x, double _y)
+{
+	double srcX = m_PlayerPtr->GetX();
+	double srcY = m_PlayerPtr->GetY();
+
+	double dstX;
+	double dstY;
+
+	double deltaX = (_x - srcX);
+	double deltaY = (_y - srcY);
+
+	if (deltaX == 0 && deltaY == 0)
+		return false;
+
+	double squaredHypotenuse = (deltaX * deltaX) + (deltaY * deltaY); // squaredHypotenuse > 0
+
+	RangeType rangeType = RangeType::Fixed;
+	switch (rangeType)
+	{
+		case RangeType::Fixed:
+		{
+			// fixed distance
+			double fixedRange = 600.0;
+
+			double distance = sqrt(squaredHypotenuse);
+
+			dstX = srcX + fixedRange * (deltaX / distance);
+			dstY = srcY + fixedRange * (deltaY / distance);
+
+			break;
+		}
+
+		case RangeType::MinMax:
+		{
+			bool hasMinRange = true;
+			bool hasMaxRange = true;
+
+			double minRange = 300.0;
+			double maxRange = 600.0;
+
+			if (hasMinRange && squaredHypotenuse <= minRange * minRange)
+			{
+				// interpolation of minimum distance
+				double distance = sqrt(squaredHypotenuse);
+
+				dstX = srcX + minRange * (deltaX / distance);
+				dstY = srcY + minRange * (deltaY / distance);
+			}
+			else if (hasMaxRange && maxRange * maxRange < squaredHypotenuse)
+			{
+				// interpolation of maximum distance
+				double distance = sqrt(squaredHypotenuse);
+
+				dstX = srcX + maxRange * (deltaX / distance);
+				dstY = srcY + maxRange * (deltaY / distance);
+			}
+			else
+			{
+				dstX = _x;
+				dstY = _y;
+			}
+
+			break;
+		}
+
+		default:
+			return false;
+	}
+
+	double abilitySpeed = 1200.0;
+
+	Projectile2D* projectile = new Projectile2D(srcX, srcY, dstX, dstY, abilitySpeed);
+	AddGameObject(std::shared_ptr<GameObject2D>(projectile));
+
+	return true;
+}
+
+
+void BudaeJjigae::RenderD2D(LONGLONG _lagTime, ID2D1HwndRenderTarget* _d2dRenderTargetPtr)
+{
+	// TODO: Creates an AimingObject2D class that renders the range during aiming.
+	Game2D::RenderD2D(_lagTime, _d2dRenderTargetPtr);
+
+	if (m_IsSkillAiming)
+	{
+		if (m_D2DSkillAimingBrushPtr == nullptr)
+		{
+			// Create a Brush.
+			ID2D1SolidColorBrush* d2dBrushPtr = Util::CreateD2DBrush(m_D2DRenderTargetPtr, D2D1::ColorF(D2D1::ColorF::Blue, 0.2f));
+			if (d2dBrushPtr == nullptr)
+				return;
+
+			m_D2DSkillAimingBrushPtr = d2dBrushPtr;
+		}
+
+		// Draw the aiming circle.
+		D2D1_ELLIPSE aimingCircle = D2D1::Ellipse(D2D1::Point2F((float)m_PlayerPtr->GetX(), (float)m_PlayerPtr->GetY()), 600.0f, 600.0f);
+		m_D2DRenderTargetPtr->FillEllipse(aimingCircle, m_D2DSkillAimingBrushPtr);
+	}
 }
 
 void BudaeJjigae::ProcessInput()
@@ -201,7 +350,7 @@ void BudaeJjigae::ProcessInput()
 		{
 			// RButtonDown
 
-			if (IsPlayerMoving)
+			if (m_IsPlayerMoving)
 			{
 				POINT cursorPos;
 				RECT rect;
@@ -219,7 +368,7 @@ void BudaeJjigae::ProcessInput()
 					if (rect.bottom < cursorPos.y)
 						cursorPos.y = rect.bottom;
 
-					m_PlayerPtr->Move(cursorPos.x, cursorPos.y);	
+					m_PlayerPtr->Move(cursorPos.x, cursorPos.y);
 				}
 			}
 		}
@@ -227,5 +376,14 @@ void BudaeJjigae::ProcessInput()
 		{
 			// RButtonUp
 		}
+	}
+}
+
+void BudaeJjigae::ReleaseD2DResources()
+{
+	if (m_D2DSkillAimingBrushPtr != nullptr)
+	{
+		m_D2DSkillAimingBrushPtr->Release();
+		m_D2DSkillAimingBrushPtr = nullptr;
 	}
 }

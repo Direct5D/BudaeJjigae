@@ -1,21 +1,68 @@
 #include "Game2D.h"
 #include "Debug.h"
+#include "Util.h"
 
 #pragma comment(lib, "d2d1")
 
 
 Game2D::Game2D()
 {
-	DEBUG_PRINTF_A("Game2D::Game2D()\n");
+	DEBUG_PRINTF_A("0x%p Game2D::Game2D()\n", this);
 }
 
 Game2D::~Game2D()
 {
-	DEBUG_PRINTF_A("Game2D::~Game2D()\n");
+	DEBUG_PRINTF_A("0x%p Game2D::~Game2D()\n", this);
 }
 
 
-bool Game2D::Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd)
+bool Game2D::AddGameObject(std::shared_ptr<GameObject2D> _gameObjectPtr)
+{
+	DEBUG_PRINTF_A("0x%p Game2D::AddGameObject() ptr = 0x%p\n", this, _gameObjectPtr.get());
+
+	if (_gameObjectPtr == nullptr)
+		return false;
+
+	m_GameObjectVector.push_back(_gameObjectPtr);
+	return true;
+}
+
+void Game2D::ReleaseD2DRenderTarget()
+{
+	if (m_D2DRenderTargetPtr != nullptr)
+	{
+		m_D2DRenderTargetPtr->Release();
+		m_D2DRenderTargetPtr = nullptr;
+	}
+
+	ReleaseD2DResources();
+}
+
+
+//void Game2D::OnWindowResize(WPARAM _wParam, UINT _width, UINT _height)
+//{
+//	// Stores the size of the window.
+//	m_WindowWidth = _width;
+//	m_WindowHeight = _height;
+//}
+
+void Game2D::RenderD2D(LONGLONG _lagTime, ID2D1HwndRenderTarget* _d2dRenderTargetPtr)
+{
+	for (size_t i = 0; i < m_GameObjectVector.size(); ++i)
+	{
+		GameObject2D* gameObject2DPtr = m_GameObjectVector[i].get();
+
+		// Get simulated information from a 2D game object and render it.
+		double simulatedX, simulatedY;
+		gameObject2DPtr->SimulatePos(_lagTime, simulatedX, simulatedY);
+
+		// TODO: Change object rendering order based on simulation results.
+		gameObject2DPtr->Render(_d2dRenderTargetPtr, simulatedX, simulatedY);
+	}
+}
+
+
+bool Game2D::OnInit()
 {
 	if (m_D2DFactoryPtr == nullptr)
 	{
@@ -31,38 +78,31 @@ bool Game2D::Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd)
 		m_D2DFactoryPtr = d2dFactoryPtr;
 	}
 
-	if (false == Game::Init(_pWndClass, _wndName, _nShowCmd))
-		return false;
-
 	return true;
-}
-
-bool Game2D::AddGameObject(std::shared_ptr<GameObject2D> _gameObjectPtr)
-{
-	DEBUG_PRINTF_A("Game2D::AddGameObject()\n");
-
-	if (_gameObjectPtr == nullptr)
-		return false;
-
-	m_GameObjectVector.push_back(_gameObjectPtr);
-	return true;
-}
-
-void Game2D::OnWindowResize(WPARAM _wParam, UINT _width, UINT _height)
-{
-	// Reisze the Direct2D render target.
-	//m_WindowWidth = _width;
-	//m_WindowHeight = _height;
 }
 
 void Game2D::Update()
 {
-	//DEBUG_PRINTF_A("Game2D::Update()\n");
+	//DEBUG_PRINTF_A("0x%p Game2D::Update()\n", this);
 
 	for (size_t i = 0; i < m_GameObjectVector.size(); ++i)
 	{
-		m_GameObjectVector[i]->Update(MICROSECONDS_PER_UPDATE);
+		// Update only on valid objects.
+		if (true == m_GameObjectVector[i]->GetValid())
+			m_GameObjectVector[i]->Update(MICROSECONDS_PER_UPDATE);
 	}
+
+	// After the traversal is complete, the invalid objects are removed in batches.
+	// TODO: Find out if there is a more efficient way.
+	// TODO: Make sure the game object is destroyed correctly. (Easy way to check: Debugging destructors)
+	std::vector<std::shared_ptr<GameObject2D>> tmpGameObjectVector;
+	for (size_t i = 0; i < m_GameObjectVector.size(); ++i)
+	{
+		// Get only valid objects.
+		if (true == m_GameObjectVector[i]->GetValid())
+			tmpGameObjectVector.push_back(m_GameObjectVector[i]); // Initialization using the copy constructor occurs internally.
+	}
+	m_GameObjectVector = tmpGameObjectVector;
 }
 
 void Game2D::Render(LONGLONG _lagTime)
@@ -87,26 +127,6 @@ void Game2D::Render(LONGLONG _lagTime)
 		m_D2DRenderTargetPtr = renderTargetPtr;
 	}
 
-	// Get the brushes
-	if (m_D2DBlackBrushPtr == nullptr)
-	{
-		// Create a Brush.
-		ID2D1SolidColorBrush* d2dBlackBrushPtr = CreateD2DBrush(m_D2DRenderTargetPtr, D2D1::ColorF(D2D1::ColorF::Black));
-		if (d2dBlackBrushPtr == nullptr)
-			return;
-
-		m_D2DBlackBrushPtr = d2dBlackBrushPtr;
-	}
-
-	if (m_D2DGreenBrushPtr == nullptr)
-	{
-		ID2D1SolidColorBrush* d2dGreenBrushPtr = CreateD2DBrush(m_D2DRenderTargetPtr, D2D1::ColorF(D2D1::ColorF::Green));
-		if (d2dGreenBrushPtr == nullptr)
-			return;
-
-		m_D2DGreenBrushPtr = d2dGreenBrushPtr;
-	}
-
 	// TODO: Find out how to get window size right after window creation.
 	RECT rect;
 	GetClientRect(m_WindowHandle, &rect);
@@ -119,45 +139,18 @@ void Game2D::Render(LONGLONG _lagTime)
 	m_D2DRenderTargetPtr->BeginDraw();
 	m_D2DRenderTargetPtr->Clear(D2D1::ColorF(D2D1::ColorF::LightGray));
 
-	for (size_t i = 0; i < m_GameObjectVector.size(); ++i)
-	{
-		GameObject2D* gameObject2DPtr = m_GameObjectVector[i].get();
-
-		// Get simulated information from a 2D game object and render it.
-		double x, y;
-		gameObject2DPtr->SimulatePos(_lagTime, x, y);
-
-		// Draw the Circle.
-		D2D1_ELLIPSE playerCircle = D2D1::Ellipse(D2D1::Point2F((float)x, (float)y), 47.5f, 47.5f);
-		m_D2DRenderTargetPtr->DrawEllipse(
-			playerCircle,
-			m_D2DBlackBrushPtr,
-			5.0f);
-		m_D2DRenderTargetPtr->FillEllipse(
-			playerCircle,
-			m_D2DGreenBrushPtr);
-		{
-			//// Draw the Rectangle.
-			//renderTargetPtr->DrawRectangle(
-			//	D2D1::RectF(
-			//		rect.left + 100,
-			//		rect.top + 100,
-			//		rect.right - 100,
-			//		rect.bottom - 100),
-			//		m_BrushPtr);
-		}
-	}
+	RenderD2D(_lagTime, m_D2DRenderTargetPtr);
 
 	HRESULT hr = m_D2DRenderTargetPtr->EndDraw();
 	if (hr != S_OK)
 	{
 		if (hr == D2DERR_RECREATE_TARGET)
 		{
+			// TODO: Also releases the resources for the render target.
 			ReleaseD2DRenderTarget();
 		}
 	}
 }
-
 
 void Game2D::OnTerminate()
 {
@@ -169,37 +162,4 @@ void Game2D::OnTerminate()
 	}
 
 	ReleaseD2DRenderTarget();
-}
-
-void Game2D::ReleaseD2DRenderTarget()
-{
-	if (m_D2DRenderTargetPtr != nullptr)
-	{
-		m_D2DRenderTargetPtr->Release();
-		m_D2DRenderTargetPtr = nullptr;
-	}
-
-	if (m_D2DBlackBrushPtr != nullptr)
-	{
-		m_D2DBlackBrushPtr->Release();
-		m_D2DBlackBrushPtr = nullptr;
-	}
-
-	if (m_D2DGreenBrushPtr != nullptr)
-	{
-		m_D2DGreenBrushPtr->Release();
-		m_D2DGreenBrushPtr = nullptr;
-	}
-}
-
-ID2D1SolidColorBrush* Game2D::CreateD2DBrush(ID2D1HwndRenderTarget* _renderTargetPtr, CONST D2D1_COLOR_F& _colorF)
-{
-	// Create a Brush.
-	ID2D1SolidColorBrush* d2dBrushPtr = NULL;
-	HRESULT hr = _renderTargetPtr->CreateSolidColorBrush(_colorF, &d2dBrushPtr
-	);
-	if (hr != S_OK)
-		return nullptr;
-
-	return d2dBrushPtr;
 }

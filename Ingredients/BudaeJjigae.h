@@ -16,10 +16,21 @@ public:
 
 private:
 	std::shared_ptr<GamePlayer2D> m_PlayerPtr;
-	bool IsPlayerMoving = false;
+	bool m_IsPlayerMoving = false;
+	bool m_IsSkillAiming = false;
+	ID2D1SolidColorBrush* m_D2DSkillAimingBrushPtr = nullptr;
 
 private:
-	virtual void OnRButtonDown(WORD _x, WORD _y) override;
-	virtual void OnRButtonUp(WORD _x, WORD _y) override;
+	void OnKeyDown(WPARAM _vKeyCode);
+	void OnLButtonDown(WORD _x, WORD _y);
+	void OnRButtonDown(WORD _x, WORD _y);
+	void OnRButtonUp(WORD _x, WORD _y);
+	bool CastSkill(double _x, double _y);
+
+	// Game2D
+protected:
+	virtual void RenderD2D(LONGLONG _lagTime, ID2D1HwndRenderTarget* _d2dRenderTargetPtr) override;
+private:
 	virtual void ProcessInput() override;
+	virtual void ReleaseD2DResources() override;
 };

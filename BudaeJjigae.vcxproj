@@ -147,7 +147,9 @@
     <ClCompile Include="Ingredients\GamePlayer2D.cpp" />
     <ClCompile Include="Ingredients\Game2D.cpp" />
     <ClCompile Include="Ingredients\main.cpp" />
+    <ClCompile Include="Ingredients\Projectile2D.cpp" />
     <ClCompile Include="Ingredients\Timer.cpp" />
+    <ClCompile Include="Ingredients\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ingredients\BudaeJjigae.h" />
@@ -157,6 +159,7 @@
     <ClInclude Include="Ingredients\GameObject2D.h" />
     <ClInclude Include="Ingredients\GamePlayer2D.h" />
     <ClInclude Include="Ingredients\Game2D.h" />
+    <ClInclude Include="Ingredients\Projectile2D.h" />
     <ClInclude Include="Ingredients\Timer.h" />
     <ClInclude Include="Ingredients\Util.h" />
   </ItemGroup>

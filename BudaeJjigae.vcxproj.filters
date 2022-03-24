@@ -5,71 +5,85 @@
       <UniqueIdentifier>{99bb5556-afc2-46cd-909b-6787bfe4376b}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{26bfa2ec-13d5-4867-b07f-82bc39cb1287}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{3baa56a9-ddc3-4dcb-a818-8f5e750b7a08}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Game Object">
+      <UniqueIdentifier>{ba0715cf-9919-4b0f-a866-3239000af499}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{da7b2e75-da78-4339-9436-18b16a3de7c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{d8e31191-7a7f-48c6-b2ec-3f7d56039427}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Ingredients\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ingredients\Timer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Ingredients\Debug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Ingredients\GameObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Game Object</Filter>
     </ClCompile>
     <ClCompile Include="Ingredients\GameObject2D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Game Object</Filter>
     </ClCompile>
     <ClCompile Include="Ingredients\GamePlayer2D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Game Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Ingredients\Projectile2D.cpp">
+      <Filter>Game Object</Filter>
     </ClCompile>
     <ClCompile Include="Ingredients\Game.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="Ingredients\Game2D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="Ingredients\BudaeJjigae.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Ingredients\Timer.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Ingredients\Debug.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Ingredients\Util.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Ingredients\Timer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Ingredients\GamePlayer2D.h">
+      <Filter>Game Object</Filter>
     </ClInclude>
-    <ClInclude Include="Ingredients\Debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Ingredients\GameObject.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Ingredients\Projectile2D.h">
+      <Filter>Game Object</Filter>
     </ClInclude>
     <ClInclude Include="Ingredients\GameObject2D.h">
-      <Filter>Header Files</Filter>
+      <Filter>Game Object</Filter>
     </ClInclude>
-    <ClInclude Include="Ingredients\GamePlayer2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Ingredients\Util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Ingredients\Game.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Ingredients\GameObject.h">
+      <Filter>Game Object</Filter>
     </ClInclude>
     <ClInclude Include="Ingredients\Game2D.h">
-      <Filter>Header Files</Filter>
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Ingredients\Game.h">
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Ingredients\BudaeJjigae.h">
-      <Filter>Header Files</Filter>
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Ingredients\Util.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Ingredients\Debug.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Ingredients\Timer.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

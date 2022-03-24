@@ -18,19 +18,17 @@ public:
 
 protected:
 	HWND m_WindowHandle = NULL;
-
 private:
 	HANDLE m_ThreadHandle = NULL;
 	bool m_TerminateThread = false;
 
 public:
-	virtual bool Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd);
-	void TerminateThread();
-protected:
-	virtual void OnWindowResize(WPARAM _wParam, UINT _width, UINT _height) = 0;
+	bool Init(WNDCLASSW* _pWndClass, LPCWSTR _wndName, int _nShowCmd);
+	void Terminate();
+
 private:
-	virtual void OnRButtonDown(WORD _x, WORD _y) = 0;
-	virtual void OnRButtonUp(WORD _x, WORD _y) = 0;
+	// Restrict access to private so that child object cannot call it.
+	virtual bool OnInit() = 0;
 	virtual void ProcessInput() = 0;
 	virtual void Update() = 0;
 	virtual void Render(LONGLONG _lagTime) = 0;

@@ -17,16 +17,19 @@ public:
 		MOVE
 	};
 
-protected:
+private:
 	STATE m_State = STATE::STOP;
-	double m_MovePosX = 0.0;
-	double m_MovePosY = 0.0;
+	double m_DstPosX = 0.0;
+	double m_DstPosY = 0.0;
 
 public:
 	STATE GetState();
 
 public:
-	virtual void Update(LONGLONG _microsecondsPerUpdate) override;
 	virtual void Move(double _x, double _y);
-	virtual void SimulatePos(LONGLONG _microseconds, double& _outX, double& _outY);
+
+	// GameObject2D
+public:
+	virtual void Update(LONGLONG _microsecondsPerUpdate) override;
+	virtual void SimulatePos(LONGLONG _microseconds, double& _outX, double& _outY) override;
 };
