@@ -76,7 +76,7 @@ void GamePlayer2D::Update(LONGLONG _microseconds)
 
 #ifdef _DEBUG
 		LONGLONG currentTime = gameTimer.GetMicroseconds();
-		if (lastTime + ((LONGLONG)1000 * 1000 * 0.1) < currentTime)
+		if (lastTime + (0.1 * (LONGLONG)1000 * 1000) < currentTime)
 		{
 			DEBUG_PRINTF_A("0x%p GamePlayer::Update m_x = %f, m_Y = %f\n", this, m_X, m_Y);
 			lastTime = currentTime;
@@ -86,9 +86,9 @@ void GamePlayer2D::Update(LONGLONG _microseconds)
 }
 
 
-void GamePlayer2D::SimulatePos(LONGLONG _microseconds, double& _outX, double& _outY)
+GameObject* GamePlayer2D::Simulate(LONGLONG _microseconds)
 {
-	//DEBUG_PRINTF_A("0x%p GamePlayer2D::SimulatePos()\n", this);
+	//DEBUG_PRINTF_A("0x%p GamePlayer2D::Simulate()\n", this);
 
 	double x = m_X;
 	double y = m_Y;
@@ -124,6 +124,6 @@ void GamePlayer2D::SimulatePos(LONGLONG _microseconds, double& _outX, double& _o
 		}
 	}
 
-	_outX = x;
-	_outY = y;
+	GamePlayer2D* simulatedGamePlayerPtr = new GamePlayer2D(x, y, m_Speed);
+	return simulatedGamePlayerPtr;
 }

@@ -18,4 +18,7 @@ public:
 	LONGLONG GetMilliseconds();
 	LONGLONG GetMicroseconds();
 	LONGLONG GetNanoseconds();
+	LONGLONG GetElapsedMilliseconds();
+	LONGLONG GetElapsedMicroseconds();
+	LONGLONG GetElapsedNanoseconds();
 };

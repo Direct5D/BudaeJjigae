@@ -29,15 +29,14 @@ private:
 
 protected:
 	//virtual void OnWindowResize(WPARAM _wParam, UINT _width, UINT _height);
-	virtual void RenderD2D(LONGLONG _lagTime, ID2D1HwndRenderTarget* _d2dRenderTargetPtr);
+	virtual void RenderD2D(LONGLONG _lagTime);
 private:
 	virtual void ReleaseD2DResources() = 0;
 
 	// Game
 private:
-	// Restrict access to private so that child object cannot call it.
 	virtual bool OnInit() override;
-	virtual void Update() override;
-	virtual void Render(LONGLONG _lagTime) override;
+	virtual void FixedUpdate() final override;
+	virtual void Render(LONGLONG _lagTime) final override;
 	virtual void OnTerminate() override;
 };

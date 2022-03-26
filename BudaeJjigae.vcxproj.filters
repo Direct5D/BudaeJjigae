@@ -85,5 +85,6 @@
     <ClInclude Include="Ingredients\Timer.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Ingredients\WindowMessage.h" />
   </ItemGroup>
 </Project>

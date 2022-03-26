@@ -26,14 +26,8 @@ LONGLONG Timer::GetMilliseconds()
 	LARGE_INTEGER perfomanceCount;
 	QueryPerformanceCounter(&perfomanceCount);
 
-	LONGLONG elapsedMicroseconds;
-	elapsedMicroseconds = (perfomanceCount.QuadPart - m_StartingTime.QuadPart);
-
 	// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
-	elapsedMicroseconds *= 1000;
-	elapsedMicroseconds /= m_Frequency.QuadPart;
-
-	return elapsedMicroseconds;
+	return (perfomanceCount.QuadPart * 1000) / m_Frequency.QuadPart;
 }
 
 LONGLONG Timer::GetMicroseconds()
@@ -41,14 +35,8 @@ LONGLONG Timer::GetMicroseconds()
 	LARGE_INTEGER perfomanceCount;
 	QueryPerformanceCounter(&perfomanceCount);
 
-	LONGLONG elapsedMicroseconds;
-	elapsedMicroseconds = (perfomanceCount.QuadPart - m_StartingTime.QuadPart);
-
 	// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
-	elapsedMicroseconds *= 1000000;
-	elapsedMicroseconds /= m_Frequency.QuadPart;
-
-	return elapsedMicroseconds;
+	return (perfomanceCount.QuadPart * 1000000) / m_Frequency.QuadPart;
 }
 
 LONGLONG Timer::GetNanoseconds()
@@ -56,12 +44,33 @@ LONGLONG Timer::GetNanoseconds()
 	LARGE_INTEGER perfomanceCount;
 	QueryPerformanceCounter(&perfomanceCount);
 
-	LONGLONG elapsedNanoseconds;
-	elapsedNanoseconds = (perfomanceCount.QuadPart - m_StartingTime.QuadPart);
+	// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
+	return (perfomanceCount.QuadPart * 1000000000) / m_Frequency.QuadPart;
+}
+
+LONGLONG Timer::GetElapsedMilliseconds()
+{
+	LARGE_INTEGER perfomanceCount;
+	QueryPerformanceCounter(&perfomanceCount);
 
 	// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
-	elapsedNanoseconds *= 1000000000;
-	elapsedNanoseconds /= m_Frequency.QuadPart;
+	return ((perfomanceCount.QuadPart - m_StartingTime.QuadPart) * 1000) / m_Frequency.QuadPart;
+}
 
-	return elapsedNanoseconds;
+LONGLONG Timer::GetElapsedMicroseconds()
+{
+	LARGE_INTEGER perfomanceCount;
+	QueryPerformanceCounter(&perfomanceCount);
+
+	// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
+	return ((perfomanceCount.QuadPart - m_StartingTime.QuadPart) * 1000000) / m_Frequency.QuadPart;
+}
+
+LONGLONG Timer::GetElapsedNanoseconds()
+{
+	LARGE_INTEGER perfomanceCount;
+	QueryPerformanceCounter(&perfomanceCount);
+
+	// To guard against loss-of-precision, we convert to microseconds *before* dividing by ticks-per-second.
+	return ((perfomanceCount.QuadPart - m_StartingTime.QuadPart) * 1000000000) / m_Frequency.QuadPart;
 }

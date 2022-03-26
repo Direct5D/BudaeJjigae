@@ -40,7 +40,7 @@ double GameObject2D::GetY()
 }
 
 
-void GameObject2D::Render(ID2D1HwndRenderTarget* _d2dRenderTargetPtr, double _simulatedX, double _simulatedY)
+void GameObject2D::Render(ID2D1HwndRenderTarget* _d2dRenderTargetPtr)
 {
 	// Get the brushes.
 	if (m_D2DBlackBrushPtr == nullptr)
@@ -63,7 +63,7 @@ void GameObject2D::Render(ID2D1HwndRenderTarget* _d2dRenderTargetPtr, double _si
 	}
 
 	// Draw the Circle.
-	D2D1_ELLIPSE playerCircle = D2D1::Ellipse(D2D1::Point2F((float)_simulatedX, (float)_simulatedY), 47.5f, 47.5f);
+	D2D1_ELLIPSE playerCircle = D2D1::Ellipse(D2D1::Point2F((float)m_X, (float)m_Y), 37.5f, 37.5f);
 	_d2dRenderTargetPtr->DrawEllipse(
 		playerCircle,
 		m_D2DBlackBrushPtr,

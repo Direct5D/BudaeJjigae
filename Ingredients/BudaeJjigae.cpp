@@ -11,6 +11,8 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 	WPARAM wParam,
 	LPARAM lParam)
 {
+	WindowMessage windowMessage{ hWnd, uMsg, wParam, lParam };
+
 	switch (uMsg)
 	{
 		case WM_CREATE:
@@ -81,12 +83,9 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 		{
 			//DEBUG_PRINTF_A("WM_KEYDOWN\n");
 
-			// If it's a letter key, you can't distinguish case by case.
-			WPARAM vKeyCode = wParam;
-
 			BudaeJjigae* pBujji = (BudaeJjigae*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 			if (pBujji != nullptr)
-				pBujji->OnKeyDown(vKeyCode);
+				pBujji->PushWindowMessage(windowMessage);
 
 			break;
 		}
@@ -102,13 +101,9 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 		{
 			//DEBUG_PRINTF_A("WM_LBUTTONDOWN\n");
 
-			WORD x = GET_X_LPARAM(lParam);
-			WORD y = GET_Y_LPARAM(lParam);
-
-			// TODO: Consider concurrency.
 			BudaeJjigae* pBujji = (BudaeJjigae*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 			if (pBujji != nullptr)
-				pBujji->OnLButtonDown(x, y);
+				pBujji->PushWindowMessage(windowMessage);
 
 			break;
 		}
@@ -129,13 +124,9 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 		{
 			//DEBUG_PRINTF_A("WM_RBUTTONDOWN\n");
 
-			WORD x = GET_X_LPARAM(lParam);
-			WORD y = GET_Y_LPARAM(lParam);
-
-			// TODO: Consider concurrency.
 			BudaeJjigae* pBujji = (BudaeJjigae*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 			if (pBujji != nullptr)
-				pBujji->OnRButtonDown(x, y);
+				pBujji->PushWindowMessage(windowMessage);
 
 			break;
 		}
@@ -144,13 +135,9 @@ LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
 		{
 			//DEBUG_PRINTF_A("WM_RBUTTONUP\n");
 
-			WORD x = GET_X_LPARAM(lParam);
-			WORD y = GET_Y_LPARAM(lParam);
-
-			// TODO: Consider concurrency.
 			BudaeJjigae* pBujji = (BudaeJjigae*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 			if (pBujji != nullptr)
-				pBujji->OnRButtonUp(x, y);
+				pBujji->PushWindowMessage(windowMessage);
 
 			break;
 		}
@@ -181,28 +168,46 @@ BudaeJjigae::~BudaeJjigae()
 }
 
 
-void BudaeJjigae::OnKeyDown(WPARAM _vKeyCode)
+void BudaeJjigae::OnKeyDown(LONGLONG _gameTime, WPARAM _vKeyCode)
 {
 	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnKeyDown(0x%02X)\n", this, _vKeyCode);
 
 	if ('Q' <= _vKeyCode && _vKeyCode <= 'R')
 	{
-		m_IsSkillAiming = !m_IsSkillAiming; // Toggle
+		if (m_IsSkillAiming == false)
+		{
+			if (!m_IsSkillColldown)
+				m_IsSkillAiming = true;
+		}
+		/*else
+		{
+			m_IsSkillAiming = false;
+		}*/
+	}
+	else if (_vKeyCode == VK_ESCAPE)
+	{
+		m_IsSkillAiming = false;
 	}
 }
 
-void BudaeJjigae::OnLButtonDown(WORD _x, WORD _y)
+void BudaeJjigae::OnLButtonDown(LONGLONG _currentTime, WORD _x, WORD _y)
 {
 	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnLButtonDown(%d, %d)\n", this, _x, _y);
 
 	if (m_IsSkillAiming)
 	{
-		CastSkill(_x, _y);
-		m_IsSkillAiming = false;
+		if (false == TryCastSkill(_currentTime, _x, _y))
+		{
+			// TODO: If necessary, notify the user of the cause of the casting failure.
+		}
+		else
+		{
+			m_IsSkillAiming = false;
+		}
 	}
 }
 
-void BudaeJjigae::OnRButtonDown(WORD _x, WORD _y)
+void BudaeJjigae::OnRButtonDown(LONGLONG _gameTime, WORD _x, WORD _y)
 {
 	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnRButtonDown(%d, %d)\n", this, _x, _y);
 
@@ -214,7 +219,7 @@ void BudaeJjigae::OnRButtonDown(WORD _x, WORD _y)
 	}
 }
 
-void BudaeJjigae::OnRButtonUp(WORD _x, WORD _y)
+void BudaeJjigae::OnRButtonUp(LONGLONG _gameTime, WORD _x, WORD _y)
 {
 	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnRButtonUp(%d, %d)\n", this, _x, _y);
 	m_IsPlayerMoving = false;
@@ -226,8 +231,11 @@ enum class RangeType
 	MinMax
 };
 
-bool BudaeJjigae::CastSkill(double _x, double _y)
+bool BudaeJjigae::TryCastSkill(LONGLONG _gameTime, double _x, double _y)
 {
+	if (m_IsSkillColldown)
+		return false;
+
 	double srcX = m_PlayerPtr->GetX();
 	double srcY = m_PlayerPtr->GetY();
 
@@ -248,7 +256,7 @@ bool BudaeJjigae::CastSkill(double _x, double _y)
 		case RangeType::Fixed:
 		{
 			// fixed distance
-			double fixedRange = 600.0;
+			double fixedRange = 500.0;
 
 			double distance = sqrt(squaredHypotenuse);
 
@@ -263,8 +271,8 @@ bool BudaeJjigae::CastSkill(double _x, double _y)
 			bool hasMinRange = true;
 			bool hasMaxRange = true;
 
-			double minRange = 300.0;
-			double maxRange = 600.0;
+			double minRange = 100.0;
+			double maxRange = 500.0;
 
 			if (hasMinRange && squaredHypotenuse <= minRange * minRange)
 			{
@@ -300,14 +308,17 @@ bool BudaeJjigae::CastSkill(double _x, double _y)
 	Projectile2D* projectile = new Projectile2D(srcX, srcY, dstX, dstY, abilitySpeed);
 	AddGameObject(std::shared_ptr<GameObject2D>(projectile));
 
+	// Set the cooldown end time.
+	m_IsSkillColldown = true;
+	m_SkillCooldownEnd = _gameTime + (LONGLONG)(2.0 * 1000 * 1000);
 	return true;
 }
 
 
-void BudaeJjigae::RenderD2D(LONGLONG _lagTime, ID2D1HwndRenderTarget* _d2dRenderTargetPtr)
+void BudaeJjigae::RenderD2D(LONGLONG _lagTime)
 {
 	// TODO: Creates an AimingObject2D class that renders the range during aiming.
-	Game2D::RenderD2D(_lagTime, _d2dRenderTargetPtr);
+	Game2D::RenderD2D(_lagTime);
 
 	if (m_IsSkillAiming)
 	{
@@ -322,65 +333,130 @@ void BudaeJjigae::RenderD2D(LONGLONG _lagTime, ID2D1HwndRenderTarget* _d2dRender
 		}
 
 		// Draw the aiming circle.
-		D2D1_ELLIPSE aimingCircle = D2D1::Ellipse(D2D1::Point2F((float)m_PlayerPtr->GetX(), (float)m_PlayerPtr->GetY()), 600.0f, 600.0f);
+		D2D1_ELLIPSE aimingCircle = D2D1::Ellipse(D2D1::Point2F((float)m_PlayerPtr->GetX(), (float)m_PlayerPtr->GetY()), 500.0f, 500.0f);
 		m_D2DRenderTargetPtr->FillEllipse(aimingCircle, m_D2DSkillAimingBrushPtr);
 	}
 }
 
-void BudaeJjigae::ProcessInput()
+void BudaeJjigae::Update(LONGLONG _gameTime)
 {
-	// GetAsyncKeyState(VK_LBUTTON) always returns the state of the left physical mouse button, regardless of whether it is mapped to the left or right logical mouse button.
-	// Determine the system's current mapping of physical mouse buttons to logical mouse buttons by calling GetSystemMetrics(SM_SWAPBUTTON).
-	bool areMouseButtonsSwapped = (0 != GetSystemMetrics(SM_SWAPBUTTON));
-	int vLButton = areMouseButtonsSwapped ? VK_RBUTTON : VK_LBUTTON;
-	int vRButton = areMouseButtonsSwapped ? VK_LBUTTON : VK_RBUTTON;
-
-	SHORT rButtonState = GetAsyncKeyState(vRButton);
-	if (rButtonState == 0)
+	if (m_IsSkillColldown)
 	{
-		// The return value is zero for the following cases:
-		// - The current desktop is not the active desktop
-		// - The foreground thread belongs to another processand the desktop does not allow the hook or the journal record.
+		if (m_SkillCooldownEnd <= _gameTime)
+			m_IsSkillColldown = false;
 	}
-	else
+
+	// Continue to issue a move command while holding the move click. (regardless of the player's movement state)
+	if (m_IsPlayerMoving)
 	{
-		bool isRButtonDown = (rButtonState < 0);
-
-		if (isRButtonDown)
+		POINT cursorPos;
+		RECT rect;
+		if (0 != GetCursorPos(&cursorPos) && 0 != ScreenToClient(m_WindowHandle, &cursorPos) && 0 != GetClientRect(m_WindowHandle, &rect))
 		{
-			// RButtonDown
+			if (cursorPos.x < rect.left)
+				cursorPos.x = rect.left;
 
-			if (m_IsPlayerMoving)
-			{
-				POINT cursorPos;
-				RECT rect;
-				if (0 != GetCursorPos(&cursorPos) && 0 != ScreenToClient(m_WindowHandle, &cursorPos) && 0 != GetClientRect(m_WindowHandle, &rect))
-				{
-					if (cursorPos.x < rect.left)
-						cursorPos.x = rect.left;
+			if (rect.right < cursorPos.x)
+				cursorPos.x = rect.right;
 
-					if (rect.right < cursorPos.x)
-						cursorPos.x = rect.right;
+			if (cursorPos.y < rect.top)
+				cursorPos.y = rect.top;
 
-					if (cursorPos.y < rect.top)
-						cursorPos.y = rect.top;
+			if (rect.bottom < cursorPos.y)
+				cursorPos.y = rect.bottom;
 
-					if (rect.bottom < cursorPos.y)
-						cursorPos.y = rect.bottom;
-
-					m_PlayerPtr->Move(cursorPos.x, cursorPos.y);
-				}
-			}
+			m_PlayerPtr->Move(cursorPos.x, cursorPos.y);
 		}
-		else
+	}
+}
+
+void BudaeJjigae::ProcessWindowMessage(LONGLONG _gameTime, WindowMessage& _windowMessage)
+{
+	HWND& hWnd = _windowMessage.hWnd;
+	UINT& uMsg = _windowMessage.uMsg;
+	WPARAM& wParam = _windowMessage.wParam;
+	LPARAM& lParam = _windowMessage.lParam;
+
+	switch (uMsg)
+	{
+		case WM_KEYDOWN:
 		{
-			// RButtonUp
+			//DEBUG_PRINTF_A("WM_KEYDOWN\n");
+
+			// If it's a letter key, you can't distinguish case by case.
+			WPARAM vKeyCode = wParam;
+			OnKeyDown(_gameTime, vKeyCode);
+
+			break;
 		}
+
+		case WM_CHAR:
+		{
+			WPARAM keyCharCode = wParam;
+			DEBUG_PRINTF_A("WM_CHAR: keyCharCode: %c\n", keyCharCode);
+			break;
+		}
+
+		case WM_LBUTTONDOWN:
+		{
+			//DEBUG_PRINTF_A("WM_LBUTTONDOWN\n");
+
+			WORD x = GET_X_LPARAM(lParam);
+			WORD y = GET_Y_LPARAM(lParam);
+			OnLButtonDown(_gameTime, x, y);
+
+			break;
+		}
+
+		case WM_LBUTTONUP:
+		{
+			//DEBUG_PRINTF_A("WM_LBUTTONUP\n");
+			break;
+		}
+
+		case WM_LBUTTONDBLCLK:
+		{
+			DEBUG_PRINTF_A("WM_LBUTTONDBLCLK\n");
+			break;
+		}
+
+		case WM_RBUTTONDOWN:
+		{
+			//DEBUG_PRINTF_A("WM_RBUTTONDOWN\n");
+
+			WORD x = GET_X_LPARAM(lParam);
+			WORD y = GET_Y_LPARAM(lParam);
+			OnRButtonDown(_gameTime, x, y);
+
+			break;
+		}
+
+		case WM_RBUTTONUP:
+		{
+			//DEBUG_PRINTF_A("WM_RBUTTONUP\n");
+
+			WORD x = GET_X_LPARAM(lParam);
+			WORD y = GET_Y_LPARAM(lParam);
+			OnRButtonUp(_gameTime, x, y);
+
+			break;
+		}
+
+		case WM_RBUTTONDBLCLK:
+		{
+			DEBUG_PRINTF_A("WM_RBUTTONDBLCLK\n");
+			break;
+		}
+
+		default:
+			break;
 	}
 }
 
 void BudaeJjigae::ReleaseD2DResources()
 {
+	DEBUG_PRINTF_A("0x%p BudaeJjigae::ReleaseD2DResources()\n", this);
+
 	if (m_D2DSkillAimingBrushPtr != nullptr)
 	{
 		m_D2DSkillAimingBrushPtr->Release();

@@ -8,32 +8,37 @@ DWORD WINAPI Game::GameThreadProc(LPVOID _lpParameter)
 {
 	DEBUG_PRINTF_A("Game::GameThreadProc(0x%p)\n", _lpParameter);
 
-	Game* pGame = (Game*)_lpParameter;
+	// TODO: Change to game timer.
+	Game& game = *(Game*)_lpParameter;
+	Timer& realTimer = game.m_RealTimer;
 
-	Timer gameTimer;
-	LONGLONG previousTime = gameTimer.GetMicroseconds();
+	LONGLONG previousTime = realTimer.GetMicroseconds();
 	LONGLONG lagTime = 0;
 
-	while (pGame->m_TerminateThread == false)
+	while (game.m_TerminateThread == false)
 	{
-		LONGLONG currentTime = gameTimer.GetMicroseconds();
+		// To process input with more recent game state, do a game update before processing the input.
+		// TODO: Choose whether to process the input after updating or update after processing the input. (Choose the one more suitable for the purpose)
+		game.Update(realTimer.GetMicroseconds());
+		game.ProcessInput(realTimer.GetMicroseconds());
+		
+		// Process input before updating and rendering for quick response to input.
+
+		LONGLONG currentTime = realTimer.GetMicroseconds();
 		LONGLONG elapsedTime = currentTime - previousTime;
 		previousTime = currentTime;
 		lagTime += elapsedTime;
 
-		pGame->ProcessInput();
-
 		// Updates changes during the lag time at once.
 		while (MICROSECONDS_PER_UPDATE <= lagTime)
 		{
-			pGame->Update(); // Fixed time update (MICROSECONDS_PER_UPDATE per update)
+			game.FixedUpdate(); // Fixed time update (MICROSECONDS_PER_UPDATE per update)
 			lagTime -= MICROSECONDS_PER_UPDATE;
 		}
-
-		pGame->Render(lagTime); // 0 <= (lagTime / MICROSECONDS_PER_UPDATE) < 1
+		game.Render(lagTime); // 0 <= (lagTime / MICROSECONDS_PER_UPDATE) < 1
 	}
 
-	pGame->OnTerminate();
+	game.OnTerminate();
 
 	DEBUG_PRINTF_A("Game::GameThreadProc(0x%p): return 0\n", _lpParameter);
 	return 0; // Do not use STILL_ACTIVE (259) as it indicates that the thread is not terminated.
@@ -138,4 +143,40 @@ void Game::Terminate()
 		CloseWindow(m_WindowHandle);
 		m_WindowHandle = NULL;
 	}
+}
+
+void Game::PushWindowMessage(WindowMessage _windowMessage)
+{
+	// TODO: lock
+	m_WindowMessageQueue.push_back(_windowMessage);
+	// TODO: unlock
+}
+
+void Game::ProcessInput(LONGLONG _gameTime)
+{
+	WindowMessage* windowMessageArray = nullptr;
+
+	// Dequeues all windows messages from the queue at once.
+	// lock
+	size_t messageCount = m_WindowMessageQueue.size();
+	if (messageCount != 0)
+	{
+		windowMessageArray = new WindowMessage[messageCount];
+
+		auto iter = m_WindowMessageQueue.begin();
+		std::copy_n(iter, messageCount, windowMessageArray);
+		m_WindowMessageQueue.erase(iter, iter + messageCount);
+
+	}
+	// unlock
+
+	// Process each window message.
+	for (size_t i = 0; i < messageCount; ++i)
+	{
+		WindowMessage& windowMessage = windowMessageArray[i];
+		ProcessWindowMessage(_gameTime, windowMessage);
+	}
+
+	if (windowMessageArray != nullptr)
+		delete[] windowMessageArray;
 }

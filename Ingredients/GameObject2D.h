@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GameObject.h"
-#include <Windows.h>
 #include <d2d1.h>
 
 
@@ -22,10 +21,10 @@ public:
 	double GetY();
 
 public:
-	virtual void SimulatePos(LONGLONG _microseconds, double& _outX, double& _outY) = 0;
-	virtual void Render(ID2D1HwndRenderTarget* _d2dRenderTargetPtr, double _simulatedX, double _simulatedY);
+	virtual void Render(ID2D1HwndRenderTarget* _d2dRenderTargetPtr);
 
 	// GameObject
 public:
 	virtual void Update(LONGLONG _microseconds) = 0;
+	virtual GameObject* Simulate(LONGLONG _microseconds) = 0;
 };

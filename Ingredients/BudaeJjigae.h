@@ -2,7 +2,8 @@
 
 #include "Game2D.h"
 #include "GamePlayer2D.h"
-#include <memory>
+#include <memory> // shared_ptr
+#include "Timer.h"
 
 
 class BudaeJjigae : public Game2D
@@ -18,19 +19,22 @@ private:
 	std::shared_ptr<GamePlayer2D> m_PlayerPtr;
 	bool m_IsPlayerMoving = false;
 	bool m_IsSkillAiming = false;
+	bool m_IsSkillColldown = false;
+	LONGLONG m_SkillCooldownEnd = 0;
 	ID2D1SolidColorBrush* m_D2DSkillAimingBrushPtr = nullptr;
 
 private:
-	void OnKeyDown(WPARAM _vKeyCode);
-	void OnLButtonDown(WORD _x, WORD _y);
-	void OnRButtonDown(WORD _x, WORD _y);
-	void OnRButtonUp(WORD _x, WORD _y);
-	bool CastSkill(double _x, double _y);
+	void OnKeyDown(LONGLONG _gameTime, WPARAM _vKeyCode);
+	void OnLButtonDown(LONGLONG _gameTime, WORD _x, WORD _y);
+	void OnRButtonDown(LONGLONG _gameTime, WORD _x, WORD _y);
+	void OnRButtonUp(LONGLONG _gameTime, WORD _x, WORD _y);
+	bool TryCastSkill(LONGLONG _gameTime, double _x, double _y);
 
 	// Game2D
 protected:
-	virtual void RenderD2D(LONGLONG _lagTime, ID2D1HwndRenderTarget* _d2dRenderTargetPtr) override;
+	virtual void RenderD2D(LONGLONG _lagTime) override;
 private:
-	virtual void ProcessInput() override;
+	virtual void Update(LONGLONG _gameTime) override;
+	virtual void ProcessWindowMessage(LONGLONG _gameTime, WindowMessage& _windowMessage) override;
 	virtual void ReleaseD2DResources() override;
 };

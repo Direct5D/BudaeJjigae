@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Windows.h>
 #include "GameObject2D.h"
 
 
@@ -31,5 +30,5 @@ public:
 	// GameObject2D
 public:
 	virtual void Update(LONGLONG _microsecondsPerUpdate) override;
-	virtual void SimulatePos(LONGLONG _microseconds, double& _outX, double& _outY) override;
+	virtual GameObject* Simulate(LONGLONG _microseconds) override;
 };

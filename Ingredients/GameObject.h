@@ -21,4 +21,5 @@ protected:
 
 public:
 	virtual void Update(LONGLONG _microseconds) = 0;
+	virtual GameObject* Simulate(LONGLONG _microseconds) = 0;
 };

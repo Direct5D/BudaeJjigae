@@ -162,6 +162,7 @@
     <ClInclude Include="Ingredients\Projectile2D.h" />
     <ClInclude Include="Ingredients\Timer.h" />
     <ClInclude Include="Ingredients\Util.h" />
+    <ClInclude Include="Ingredients\WindowMessage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

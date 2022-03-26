@@ -29,6 +29,8 @@ bool Game2D::AddGameObject(std::shared_ptr<GameObject2D> _gameObjectPtr)
 
 void Game2D::ReleaseD2DRenderTarget()
 {
+	DEBUG_PRINTF_A("0x%p Game2D::ReleaseD2DRenderTarget()\n", this);
+
 	if (m_D2DRenderTargetPtr != nullptr)
 	{
 		m_D2DRenderTargetPtr->Release();
@@ -46,18 +48,21 @@ void Game2D::ReleaseD2DRenderTarget()
 //	m_WindowHeight = _height;
 //}
 
-void Game2D::RenderD2D(LONGLONG _lagTime, ID2D1HwndRenderTarget* _d2dRenderTargetPtr)
+void Game2D::RenderD2D(LONGLONG _lagTime)
 {
 	for (size_t i = 0; i < m_GameObjectVector.size(); ++i)
 	{
 		GameObject2D* gameObject2DPtr = m_GameObjectVector[i].get();
 
 		// Get simulated information from a 2D game object and render it.
-		double simulatedX, simulatedY;
-		gameObject2DPtr->SimulatePos(_lagTime, simulatedX, simulatedY);
+		// TODO: Copying game objects for every simulation is inefficient. Structural change is required.
+		GameObject2D* simulatedObject2DPtr = (GameObject2D*)gameObject2DPtr->Simulate(_lagTime);
 
 		// TODO: Change object rendering order based on simulation results.
-		gameObject2DPtr->Render(_d2dRenderTargetPtr, simulatedX, simulatedY);
+		
+		simulatedObject2DPtr->Render(m_D2DRenderTargetPtr);
+
+		delete simulatedObject2DPtr;
 	}
 }
 
@@ -81,9 +86,9 @@ bool Game2D::OnInit()
 	return true;
 }
 
-void Game2D::Update()
+void Game2D::FixedUpdate()
 {
-	//DEBUG_PRINTF_A("0x%p Game2D::Update()\n", this);
+	//DEBUG_PRINTF_A("0x%p Game2D::FixedUpdate()\n", this);
 
 	for (size_t i = 0; i < m_GameObjectVector.size(); ++i)
 	{
@@ -139,7 +144,7 @@ void Game2D::Render(LONGLONG _lagTime)
 	m_D2DRenderTargetPtr->BeginDraw();
 	m_D2DRenderTargetPtr->Clear(D2D1::ColorF(D2D1::ColorF::LightGray));
 
-	RenderD2D(_lagTime, m_D2DRenderTargetPtr);
+	RenderD2D(_lagTime);
 
 	HRESULT hr = m_D2DRenderTargetPtr->EndDraw();
 	if (hr != S_OK)
