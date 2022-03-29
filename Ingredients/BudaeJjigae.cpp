@@ -3,6 +3,7 @@
 #include "Util.h"
 #include <Windowsx.h>
 #include "Projectile2D.h"
+#include "Wall2D.h"
 
 
 LRESULT CALLBACK BudaeJjigae::BujjiWndProcW(
@@ -160,6 +161,10 @@ BudaeJjigae::BudaeJjigae(double _speed) : Game2D(), m_PlayerPtr(new GamePlayer2D
 {
 	DEBUG_PRINTF_A("0x%p BudaeJjigae::BudaeJjigae()\n", this);
 	AddGameObject(m_PlayerPtr);
+
+	// Temporary
+	std::shared_ptr<GameObject2D> wallPtr((GameObject2D*)new Wall2D(300.0, 300.0));
+	AddGameObject(wallPtr);
 }
 
 BudaeJjigae::~BudaeJjigae()
@@ -168,7 +173,7 @@ BudaeJjigae::~BudaeJjigae()
 }
 
 
-void BudaeJjigae::OnKeyDown(LONGLONG _gameTime, WPARAM _vKeyCode)
+void BudaeJjigae::ProcessKeyDown(LONGLONG _gameTime, WPARAM _vKeyCode)
 {
 	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnKeyDown(0x%02X)\n", this, _vKeyCode);
 
@@ -190,7 +195,7 @@ void BudaeJjigae::OnKeyDown(LONGLONG _gameTime, WPARAM _vKeyCode)
 	}
 }
 
-void BudaeJjigae::OnLButtonDown(LONGLONG _currentTime, WORD _x, WORD _y)
+void BudaeJjigae::ProcessLButtonDown(LONGLONG _currentTime, WORD _x, WORD _y)
 {
 	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnLButtonDown(%d, %d)\n", this, _x, _y);
 
@@ -207,7 +212,7 @@ void BudaeJjigae::OnLButtonDown(LONGLONG _currentTime, WORD _x, WORD _y)
 	}
 }
 
-void BudaeJjigae::OnRButtonDown(LONGLONG _gameTime, WORD _x, WORD _y)
+void BudaeJjigae::ProcessRButtonDown(LONGLONG _gameTime, WORD _x, WORD _y)
 {
 	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnRButtonDown(%d, %d)\n", this, _x, _y);
 
@@ -219,7 +224,7 @@ void BudaeJjigae::OnRButtonDown(LONGLONG _gameTime, WORD _x, WORD _y)
 	}
 }
 
-void BudaeJjigae::OnRButtonUp(LONGLONG _gameTime, WORD _x, WORD _y)
+void BudaeJjigae::ProcessRButtonUp(LONGLONG _gameTime, WORD _x, WORD _y)
 {
 	DEBUG_PRINTF_A("0x%p BudaeJjigae::OnRButtonUp(%d, %d)\n", this, _x, _y);
 	m_IsPlayerMoving = false;
@@ -310,7 +315,7 @@ bool BudaeJjigae::TryCastSkill(LONGLONG _gameTime, double _x, double _y)
 
 	// Set the cooldown end time.
 	m_IsSkillColldown = true;
-	m_SkillCooldownEnd = _gameTime + (LONGLONG)(2.0 * 1000 * 1000);
+	m_SkillCooldownEnd = _gameTime + (LONGLONG)(0.5 * 1000 * 1000);
 	return true;
 }
 
@@ -385,7 +390,7 @@ void BudaeJjigae::ProcessWindowMessage(LONGLONG _gameTime, WindowMessage& _windo
 
 			// If it's a letter key, you can't distinguish case by case.
 			WPARAM vKeyCode = wParam;
-			OnKeyDown(_gameTime, vKeyCode);
+			ProcessKeyDown(_gameTime, vKeyCode);
 
 			break;
 		}
@@ -403,7 +408,7 @@ void BudaeJjigae::ProcessWindowMessage(LONGLONG _gameTime, WindowMessage& _windo
 
 			WORD x = GET_X_LPARAM(lParam);
 			WORD y = GET_Y_LPARAM(lParam);
-			OnLButtonDown(_gameTime, x, y);
+			ProcessLButtonDown(_gameTime, x, y);
 
 			break;
 		}
@@ -426,7 +431,7 @@ void BudaeJjigae::ProcessWindowMessage(LONGLONG _gameTime, WindowMessage& _windo
 
 			WORD x = GET_X_LPARAM(lParam);
 			WORD y = GET_Y_LPARAM(lParam);
-			OnRButtonDown(_gameTime, x, y);
+			ProcessRButtonDown(_gameTime, x, y);
 
 			break;
 		}
@@ -437,7 +442,7 @@ void BudaeJjigae::ProcessWindowMessage(LONGLONG _gameTime, WindowMessage& _windo
 
 			WORD x = GET_X_LPARAM(lParam);
 			WORD y = GET_Y_LPARAM(lParam);
-			OnRButtonUp(_gameTime, x, y);
+			ProcessRButtonUp(_gameTime, x, y);
 
 			break;
 		}

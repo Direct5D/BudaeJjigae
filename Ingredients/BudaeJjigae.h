@@ -24,10 +24,10 @@ private:
 	ID2D1SolidColorBrush* m_D2DSkillAimingBrushPtr = nullptr;
 
 private:
-	void OnKeyDown(LONGLONG _gameTime, WPARAM _vKeyCode);
-	void OnLButtonDown(LONGLONG _gameTime, WORD _x, WORD _y);
-	void OnRButtonDown(LONGLONG _gameTime, WORD _x, WORD _y);
-	void OnRButtonUp(LONGLONG _gameTime, WORD _x, WORD _y);
+	void ProcessKeyDown(LONGLONG _gameTime, WPARAM _vKeyCode);
+	void ProcessLButtonDown(LONGLONG _gameTime, WORD _x, WORD _y);
+	void ProcessRButtonDown(LONGLONG _gameTime, WORD _x, WORD _y);
+	void ProcessRButtonUp(LONGLONG _gameTime, WORD _x, WORD _y);
 	bool TryCastSkill(LONGLONG _gameTime, double _x, double _y);
 
 	// Game2D

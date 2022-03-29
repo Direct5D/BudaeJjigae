@@ -90,7 +90,8 @@ void Game2D::FixedUpdate()
 {
 	//DEBUG_PRINTF_A("0x%p Game2D::FixedUpdate()\n", this);
 
-	for (size_t i = 0; i < m_GameObjectVector.size(); ++i)
+	size_t objectCount = m_GameObjectVector.size();
+	for (size_t i = 0; i < objectCount; ++i)
 	{
 		// Update only on valid objects.
 		if (true == m_GameObjectVector[i]->GetValid())

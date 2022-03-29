@@ -165,8 +165,7 @@ void Game::ProcessInput(LONGLONG _gameTime)
 
 		auto iter = m_WindowMessageQueue.begin();
 		std::copy_n(iter, messageCount, windowMessageArray);
-		m_WindowMessageQueue.erase(iter, iter + messageCount);
-
+		m_WindowMessageQueue.clear();
 	}
 	// unlock
 
